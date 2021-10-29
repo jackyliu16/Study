@@ -1,4 +1,11 @@
 import java.util.Arrays;
+/* 主要修正问题：
+1. [sp,sp+1) 修改成为(sp,sp+1]
+2. 需要对于不需要的行进行修正
+3. 需要对于图像进行修正
+ */
+
+
 
 public class Apple{
     static double findBig(double a, String b){
