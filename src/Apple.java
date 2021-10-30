@@ -182,7 +182,6 @@ public class Apple{
 //        System.out.print(aInSection("1987-01-20",split,0));
         Double[][] output = analyse(D2,split);
 
-//        Draw(output);
         // print 2D array with |
         for (Double[] strings : output) {
             for (int j = 0; j < output[0].length; j++) {
