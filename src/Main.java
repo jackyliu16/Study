@@ -30,7 +30,6 @@ public class Main {
         double B = Double.parseDouble(b);
         return Math.min(a, B);
     }
-
     /** Compare
      * Enter two times and compare them to get the relationship between them
      * if time a < time b return -1
@@ -50,9 +49,11 @@ public class Main {
                 return -1;
             }
             else if (Integer.parseInt(A[i]) == Integer.parseInt(B[i])) {
-                if (i != A.length - 1)
-                    continue;
-                else
+//                if (i != A.length - 1)
+//                    continue;
+//                else
+//                    return 0;
+                if ( i == A.length - 1)
                     return 0;
             }
             else{
@@ -181,8 +182,7 @@ public class Main {
             high_collect[i] = a[i][2];
             low_collect[i] = a[i][3];
         }
-        double[] answer = {StdStats.min(low_collect),StdStats.max(high_collect)};
-        return answer;
+        return new double[]{StdStats.min(low_collect),StdStats.max(high_collect)};
     }
 
     /**
@@ -290,12 +290,12 @@ public class Main {
             String[] apple = mintime.split("-");        // getting the first time of Data
             int banana = Integer.parseInt(apple[2]);
             banana--;                                         // advance the date by one
-            split_year[0] = apple[0] + "-" + apple[1] + "-" + Integer.toString(banana);
+            split_year[0] = apple[0] + "-" + apple[1] + "-" + banana;
         }
         split_year[YearAcross] = maxtime;
         // Sets the last day to the last delimited value
         for (int i = 1; i < split_time.length-1 ; i++){
-            split_year[i] = Integer.toString(split_time[i]) + "-10-15" ;
+            split_year[i] = split_time[i] + "-10-15" ;
         }       // add mon and day to data
 
         // print the split of year
@@ -310,7 +310,6 @@ public class Main {
                 OutPut[i][j] = output[i][j];
             }
         }
-
         // print out the OutPut Array
         /*for(double[] strings : OutPut){
             for ( int j = 0; j < OutPut[0].length ; j++){
@@ -319,8 +318,6 @@ public class Main {
             }
             System.out.println();
         }*/
-
-
         Draw(OutPut);
     }
 
