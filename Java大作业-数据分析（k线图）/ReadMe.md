@@ -8,7 +8,7 @@
 > 在使用java文件的时候需要注意，在同目录下方必须存在子目录data，于其中存放需要进行绘图操作的csv格式的数据
 
 ### 作业需求
-Task: Draw Yearly Candlestick Charts from Daily Prices
+**Task: Draw Yearly Candlestick Charts from Daily Prices**
 > Draw yearly candlestick charts from daily prices in the two .csv files (HSI.csv and IXIC.csv) in the attached data.zip.
 > Note the data in the .csv files are daily open, high, low and close prices and should be converted to yearly open, high, low and close prices before plotting.
 > Yearly prices are calculated from daily prices in the following way.
