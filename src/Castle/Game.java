@@ -3,7 +3,7 @@ package castle;
 面向对象程序设计原则
     1. 消除代码复制
         修改方案，提取对应字符作为新的函数ShowPrompt()
-    2. 通过封装来降低耦合程度(降低类之间的关联)
+    2. 通过封装来降低耦合(降低类之间的关联)
     > **在程序设计中，应当尽可能的维持所有的成员变量都是private的， 不到万不可以，不要使用public变量**
 
         对于本次的代码而言，Room和Game 两个类都有大量的代码相关(就比如说Game引用了大量Room中的public变量.
@@ -13,6 +13,11 @@ package castle;
 
         在本次的操作中我们通过产生getExit() and getExitDesc()两个接口，
         降低了两个类之间的关联程度【一个类不会使用到另一个类中的变量】
+        在此基础上，将方向的表示，尽可能的通过Room来完成
+    3. 通过容器来实现灵活性
+        Room的方向是通过成员变量进行表示的，增加或者减少方向都需要对于代码进行改动
+        但如果通过Hash表来表示方向，那么方向就不是硬编码的了【方向与Room没有关系了】
+        【硬编码是将数据直接嵌入到程序或其他可执行对象的源代码中的软件开发实践，与从外部获取数据或在运行时生成数据不同。】
 
  */
 import java.util.Scanner;
@@ -37,11 +42,16 @@ public class Game {
         bedroom = new Room("卧室");
         
         //	初始化房间的出口
-        outside.setExits(null, lobby, study, pub);
-        lobby.setExits(null, null, null, outside);
-        pub.setExits(null, outside, null, null);
-        study.setExits(outside, bedroom, null, null);
-        bedroom.setExits(null, null, null, study);
+        outside.setExit("east", lobby);
+        outside.setExit("south",study);
+        outside.setExit("west",pub);
+        lobby.setExit("west",outside);
+        pub.setExit("east",outside);
+        study.setExit("north",outside);
+        study.setExit("east",bedroom);
+        bedroom.setExit("west",study);
+        lobby.setExit("up",pub);
+        pub.setExit("down",lobby);
 
         currentRoom = outside;  //	从城堡门外开始
     }
