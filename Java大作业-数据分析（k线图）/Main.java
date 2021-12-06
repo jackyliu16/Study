@@ -90,8 +90,10 @@ public class Main {
     static Double[][] analyse(String[][] a, String[] split) {
         Double[][] recode = new Double[split.length - 1][4];
         /*
-         * recode = {top,bottom,max,min} 0 1 2 3 a = {Date,Open,High,Low,Close,Adj
-         * Close,Volume} 0 1 2 3 4 5 6
+         * recode = {top,bottom,max,min}
+         *            0     1    2    3
+         * a = {Date,Open,High,Low,Close,Adj Close,Volume}
+         *        0    1   2    3    4    5              6
          */
         int sp = 0; // the index of year range
         // recode the start of the first year
@@ -195,7 +197,8 @@ public class Main {
         Path path = Paths.get(filename);
         List<String> contents = Files.readAllLines(path, Charset.defaultCharset());
 
-        int line = 0; // account the number of line
+        int line = 0;
+        // account the number of line
         for (String b : contents) {
             if (!b.contains("null"))
                 line++;
