@@ -6,7 +6,7 @@ import openpyxl
 from wordcloud import WordCloud # 不知道为什么在3.9中会出现安装失败
 
 def generate_pic(frequency,filename):
-    wordcloud = WordCloud(font_path="C:\Windows\Fonts\HGKT_CNKI.TTF",
+    wordcloud = WordCloud(font_path="HGKT_CNKI.TTF",
                           background_color="white",
                           width=1920, height=1080)
     # 生成词云
