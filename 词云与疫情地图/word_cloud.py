@@ -1,13 +1,29 @@
 """
 Author： 刘逸珑
 Time：   2021/12/8 21:09
+References:
+    https://blog.csdn.net/heyuexianzi/article/details/76851377
+    https://github.com/amueller/word_cloud/blob/master/examples/masked.py
 """
 import openpyxl
 from wordcloud import WordCloud # 不知道为什么在3.9中会出现安装失败
+import matplotlib.pyplot as plt
+import numpy as np
+import PIL.Image as Image
+
+background_image = np.array(Image.open("微信图片_20211209221808.png"))
+# for row in range(len(background_image)):
+#     for col in range(len(background_image[0])):
+#         background_image[row][col] = 255 - background_image[row][col]
+
 
 def generate_pic(frequency,filename):
+    # TODO 这个地方存在转化问题，在讲图片转化为矩阵的时候出现异常的边框
     wordcloud = WordCloud(font_path="HGKT_CNKI.TTF",
                           background_color="white",
+                          mask = background_image,
+                          # If mask is not None, width and height will be ignored and the shape of mask will be used instead.
+                          # All white (#FF or #FFFFFF) entries will be considerd "masked out" while other entries will be free to draw on.
                           width=1920, height=1080)
     # 生成词云
     wordcloud.generate_from_frequencies(frequency)
@@ -15,7 +31,7 @@ def generate_pic(frequency,filename):
     wordcloud.to_file("{}.png".format(filename))
 
 # Read Data
-wb = openpyxl.load_workbook('../data.xlsx')
+wb = openpyxl.load_workbook('data.xlsx')
 # 获取工作表
 ws = wb['国内疫情']
 frequencyIn = {}

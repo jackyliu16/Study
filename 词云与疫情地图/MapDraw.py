@@ -8,6 +8,7 @@ from pyecharts import options as opts
 from pyecharts.charts import Map
 from pyecharts.faker import Faker
 
+
 class Draw_map():
     def to_map_city(self):
         pass
