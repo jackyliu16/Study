@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import PIL.Image as Image
 
-background_image = np.array(Image.open("微信图片_20211209221808.png"))
+background_image = np.array(Image.open("5237843.jpg"))
 # for row in range(len(background_image)):
 #     for col in range(len(background_image[0])):
 #         background_image[row][col] = 255 - background_image[row][col]
@@ -24,6 +24,10 @@ def generate_pic(frequency,filename):
                           mask = background_image,
                           # If mask is not None, width and height will be ignored and the shape of mask will be used instead.
                           # All white (#FF or #FFFFFF) entries will be considerd "masked out" while other entries will be free to draw on.
+                          # contour_width = 1,
+                          # max_words = 300,
+                          # max_font_size = 400,
+                          # contour_color = 'blue',
                           width=1920, height=1080)
     # 生成词云
     wordcloud.generate_from_frequencies(frequency)
