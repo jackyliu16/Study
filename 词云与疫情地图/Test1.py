@@ -3,7 +3,7 @@ import csv
 
 
 
-filename = 'D:\COVID-19-master\csse_covid_19_data\csse_covid_19_daily_reports_us\Jan/01-01-2021.csv'
+filename = r'C:\Users\刘逸珑\PycharmProjects\DataAnalyse\词云与疫情地图\Jan/01-01-2021.csv'
 with open(filename) as f:
     reader = csv.DictReader(f)
     Province_State = []
@@ -13,4 +13,4 @@ with open(filename) as f:
         # Max TemperatureF是表第一行的某个数据，作为key
         Province = row['Province_State']
         Province_State.append(Province)
-    print(Province_State)
+    print(f'Province List: {Province_State}')
