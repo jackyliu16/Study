@@ -8,7 +8,6 @@ References:
 """
 import openpyxl
 from wordcloud import WordCloud # 不知道为什么在3.9中会出现安装失败
-import matplotlib.pyplot as plt
 import numpy as np
 import PIL.Image as Image
 import cv2
