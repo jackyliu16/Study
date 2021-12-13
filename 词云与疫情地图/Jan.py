@@ -1,5 +1,5 @@
 import csv
-import Test1
+import getProvinceName
 import pandas as pd
 import os
 import glob
@@ -7,7 +7,7 @@ from pathlib import Path
 import json
 
 ConfirmedForMonth = []
-for i in range(1, len(Test1.Province_State)):
+for i in range(1, len(getProvinceName.Province_State)):
     ConfirmedForMonth.append(0)
 print(f"Confirmed_List: {ConfirmedForMonth}")
 
