@@ -12,7 +12,7 @@ for i in range(1, len(getProvinceName.Province_State)):
 print(f"Confirmed_List: {ConfirmedForMonth}")
 
 #打印出所有要批处理的文件
-p = Path(r"C:\Users\刘逸珑\PycharmProjects\DataAnalyse\词云与疫情地图\Jan")       # 注： 在考虑转换成为相对路径的时候出现不知名错误
+p = Path(r"C:\Programma\Python\Study\词云与疫情地图\Jan")       # 注： 在考虑转换成为相对路径的时候出现不知名错误
 FileList = list(p.glob("*.csv"))        # 用作保存所有需要阅读的list
 
 
@@ -28,16 +28,14 @@ for File in FileList:
 
         # 对于函数中的 每一个元素调用 function 方法，再将返回的map object转化成为list对象
         confirmedForDay = list(map( int, confirmedForDay))
-        for i in range(0, len(ConfirmedForMonth) - 1):
+        for i in range(0, len(ConfirmedForMonth)):
             ConfirmedForMonth[i] = ConfirmedForMonth[i] + confirmedForDay[i]
 
 
 #创建一个字典
 Province_Confirmed = []
-for i in range(0,len(Test1.Province_State)-1):
-    confirmedForProvince = {}
-    confirmedForProvince['Province'] = Test1.Province_State[i]
-    confirmedForProvince['Confirmed'] = ConfirmedForMonth[i]
+for i in range(0,len(getProvinceName.Province_State)-1):
+    confirmedForProvince = {'Province': getProvinceName.Province_State[i], 'Confirmed': ConfirmedForMonth[i]}
     Province_Confirmed.append(confirmedForProvince)
 
 print("#" * 75 + " the output of a mouth " + "#" * 75 )
