@@ -1,21 +1,25 @@
-"""
-Author： 刘逸珑
-Time：   2021/12/15 0:26
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+'''
+@Target  ：
+@Author  ：jackyliu
+@Date    ：2021/12/15 19:16
 Reference:
     https://pyecharts.org/#/zh-cn/intro
     https://gallery.pyecharts.org/#/README
-"""
+
+'''
 from typing import List
 import pyecharts.options as opts
 from pyecharts.globals import ThemeType
 from pyecharts.commons.utils import JsCode
 from pyecharts.charts import Timeline, Grid, Bar, Map, Pie, Line
-import json
 from pyecharts.datasets import register_url
+import json
 
 register_url("https://echarts-maps.github.io/echarts-countries-js/")
 
-with open('Data(1).json', 'r') as fp:
+with open('Data(2).json', 'r') as fp:
     json_data = fp.read()
     Data = json.loads(json_data)
     # print(Data)
@@ -103,31 +107,15 @@ def get_year_chart(year: str):
             ),
         )
     )
-
-    line_chart = (
-        Line()
-            .add_xaxis(time_list)
-            .add_yaxis("", total_confirmed_list)
-            .add_yaxis(
-            "",
-            data_mark,
-            markpoint_opts=opts.MarkPointOpts(data=[opts.MarkPointItem(type_="max")]),
-        )
-            .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
-            .set_global_opts(
-            title_opts=opts.TitleOpts(
-                title="全国GDP总量1993-2018年（单位：万亿）", pos_left="72%", pos_top="5%"
-            )
-        )
-    )
-    bar_x_data = [x[1] for x in map_data]
-    bar_y_data = [{"Province": x[0], "Confirmed": x[1]} for x in map_data]
+    data = sorted(map_data, key=(lambda x: x[1]), reverse=True)
+    bar_x_data = [x[0] for x in data]  # 分类名称
+    bar_y_data = [x[1] for x in data]  # value
     bar = (
         Bar()
             .add_xaxis(xaxis_data=bar_x_data)
             .add_yaxis(
             series_name="",
-            y_axis=bar_y_data,
+            yaxis_data=bar_y_data,
             label_opts=opts.LabelOpts(
                 is_show=True, position="right", formatter="{b} : {c}"
             ),
@@ -159,7 +147,7 @@ def get_year_chart(year: str):
             .add(
             series_name="",
             data_pair=pie_data,
-            radius=["15%", "35%"],
+            radius=["5%", "25%"],
             center=["80%", "82%"],
             itemstyle_opts=opts.ItemStyleOpts(
                 border_width=1, border_color="rgba(0,0,0,0.3)"
@@ -176,16 +164,10 @@ def get_year_chart(year: str):
             .add(
             bar,
             grid_opts=opts.GridOpts(
-                pos_left="10", pos_right="45%", pos_top="50%", pos_bottom="5"
+                pos_left="10", pos_right="45%", pos_top="30%", pos_bottom="5"
             ),
         )
-            .add(
-            line_chart,
-            grid_opts=opts.GridOpts(
-                pos_left="75%", pos_right="80", pos_top="10%", pos_bottom="50%"
-            ),
-        )
-            .add(pie, grid_opts=opts.GridOpts(pos_left="45%", pos_top="60%"))
+            .add(pie, grid_opts=opts.GridOpts(pos_left="65%", pos_top="60%"))
             .add(map_chart, grid_opts=opts.GridOpts())
     )
 
@@ -204,7 +186,7 @@ if __name__ == "__main__":
         orient="vertical",
         is_auto_play=True,
         is_inverse=True,
-        play_interval=5000,
+        play_interval=2000,
         pos_left="null",
         pos_right="5",
         pos_top="20",
@@ -213,4 +195,4 @@ if __name__ == "__main__":
         label_opts=opts.LabelOpts(is_show=True, color="#fff"),
     )
 
-    timeline.render("美国疫情地图.html")
+    timeline.render("美国疫情地图Test.html")
