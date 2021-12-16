@@ -1,8 +1,5 @@
 import csv
 import getProvinceName
-import pandas as pd
-import os
-import glob
 from pathlib import Path
 import json
 
@@ -12,7 +9,7 @@ for i in range(1, len(getProvinceName.Province_State)):
 print(f"Confirmed_List: {ConfirmedForMonth}")
 
 #打印出所有要批处理的文件
-p = Path(r"C:\Programma\Python\Study\词云与疫情地图\Jan")       # 注： 在考虑转换成为相对路径的时候出现不知名错误
+p = Path(r"C:\Users\刘逸珑\PycharmProjects\DataAnalyse\词云与疫情地图\Jan\01-02-2021.csv")       # 注： 在考虑转换成为相对路径的时候出现不知名错误
 FileList = list(p.glob("*.csv"))        # 用作保存所有需要阅读的list
 
 

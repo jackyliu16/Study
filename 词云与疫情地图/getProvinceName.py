@@ -3,7 +3,7 @@ import csv
 
 
 
-filename = r'C:\Programma\Python\Study\词云与疫情地图\Jan\01-01-2021.csv'
+filename = r'C:\Users\刘逸珑\PycharmProjects\DataAnalyse\词云与疫情地图\Jan\01-02-2021.csv'
 with open(filename) as f:
     reader = csv.DictReader(f)
     Province_State = []
