@@ -13,4 +13,4 @@ with open(filename) as f:
         # Max TemperatureF是表第一行的某个数据，作为key
         Province = row['Province_State']
         Province_State.append(Province)
-    print(f'Province List: {Province_State}')
+    # print(f'Province List: {Province_State}')

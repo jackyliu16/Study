@@ -19,14 +19,14 @@ import json
 
 register_url("https://echarts-maps.github.io/echarts-countries-js/")
 
-with open('Data(2).json', 'r') as fp:
+with open('Data.json', 'r') as fp:
     json_data = fp.read()
     Data = json.loads(json_data)
     # print(Data)
 
 # print(json_data)
 
-time_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+time_list = [i for i in range(1,13)]
 
 # 全世界确诊增量
 minNum = maxNum = 0
