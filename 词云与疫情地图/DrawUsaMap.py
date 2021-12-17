@@ -76,7 +76,7 @@ def get_year_chart(year: str):
         )
             .set_global_opts(
             title_opts=opts.TitleOpts(
-                title="" + str(year) + "美国确诊人数变动图",
+                title="2021年" + str(year) + "月美国各州确诊人数图",
                 subtitle="",
                 pos_left="center",
                 pos_top="top",
@@ -167,7 +167,7 @@ def get_year_chart(year: str):
                 pos_left="10", pos_right="45%", pos_top="30%", pos_bottom="5"
             ),
         )
-            .add(pie, grid_opts=opts.GridOpts(pos_left="65%", pos_top="60%"))
+            .add(pie, grid_opts=opts.GridOpts(pos_left="100%", pos_top="40%"))
             .add(map_chart, grid_opts=opts.GridOpts())
     )
 
@@ -195,4 +195,4 @@ if __name__ == "__main__":
         label_opts=opts.LabelOpts(is_show=True, color="#fff"),
     )
 
-    timeline.render("美国疫情地图Test.html")
+    timeline.render("美国疫情地图[终版].html")
