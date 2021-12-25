@@ -14,33 +14,35 @@
     2. https://gzmtr.com/
 '''
 
+import json
 import random
 from collections import Counter
-import csv
-import json
+
 INF = 0x3f3f3f
 
 
-def making_connection_in_line(line:list):
-    global Adjacent_matrix
-    global total_site_list
-    for station_index in range(0,len(line)-1):
-        # 不能使之等于倒数第二个元素
-        rand = int(random.random()*100 + 1)
-        Adjacent_matrix[total_site_list.index(line[station_index])][total_site_list.index(line[station_index+1])] = rand
-        Adjacent_matrix[total_site_list.index(line[station_index+1])][total_site_list.index(line[station_index])] = rand
+def initialization():
+    def making_connection_in_line(line: list):
+        nonlocal Adjacent_matrix
+        nonlocal total_site_list
+        for station_index in range(0, len(line) - 1):
+            # 不能使之等于倒数第二个元素
+            rand = int(random.random() * 100 + 1)
+            Adjacent_matrix[total_site_list.index(line[station_index])][
+                total_site_list.index(line[station_index + 1])] = rand
+            Adjacent_matrix[total_site_list.index(line[station_index + 1])][
+                total_site_list.index(line[station_index])] = rand
 
+    def finding_interchange_station(total_site: list) -> list:
+        dict_count = Counter(total_site)
+        interchange_station = []
+        for k, v in dict_count.items():
+            if v > 1:
+                interchange_station.append(k)
+        return interchange_station
 
-def finding_interchange_station(total_site : list) -> list:
-    dict_count = Counter(total_site)
-    interchange_station = []
-    for k,v in dict_count.items():
-        if v > 1:
-            interchange_station.append(k)
-    return interchange_station
-
-# source 1
-line1 = """广州东站
+    # source 1
+    line1 = """广州东站
 体育中心
 体育西路
 杨箕
@@ -56,7 +58,7 @@ line1 = """广州东站
 花地湾
 坑口
 西朗"""
-line2 = """广州南站
+    line2 = """广州南站
 石壁
 会江
 南浦
@@ -80,7 +82,7 @@ line2 = """广州南站
 江夏
 黄边
 嘉禾望岗"""
-line3 = """天河客运站
+    line3 = """天河客运站
 五山
 华师
 岗顶
@@ -96,7 +98,7 @@ line3 = """天河客运站
 汉溪长隆
 市桥
 番禺广场"""
-line4 = """机场北
+    line4 = """机场北
 机场南
 高增
 人和
@@ -110,36 +112,36 @@ line4 = """机场北
 燕塘
 广州东站
 林和西"""
-line1 = line1.split("\n")
-line2 = line2.split("\n")
-line3 = line3.split("\n")
-line4 = line4.split("\n")
+    line1 = line1.split("\n")
+    line2 = line2.split("\n")
+    line3 = line3.split("\n")
+    line4 = line4.split("\n")
 
-line_list = [line1,line2,line3,line4]
-total_site = line1.copy()
-total_site.extend(line2)
-total_site.extend(line3)
-total_site.extend(line4)
-# 参考1 去除站点列表中的重复元素
-total_site_list = list(set(total_site))
-total_site_list.sort(key=total_site.index)
+    line_list = [line1, line2, line3, line4]
+    total_site = line1.copy()
+    total_site.extend(line2)
+    total_site.extend(line3)
+    total_site.extend(line4)
+    # 参考1 去除站点列表中的重复元素
+    total_site_list = list(set(total_site))
+    total_site_list.sort(key=total_site.index)
 
-# initialization
-Adjacent_matrix = [[INF] * len(total_site_list) for i in range(len(total_site_list))]
+    # initialization
+    Adjacent_matrix = [[INF] * len(total_site_list) for i in range(len(total_site_list))]
 
-# initialization the distance of station : make sure the distance from a station to a station is 0
-for i in range(len(Adjacent_matrix)):
-    Adjacent_matrix[i][i] = 0
+    # initialization the distance of station : make sure the distance from a station to a station is 0
+    for i in range(len(Adjacent_matrix)):
+        Adjacent_matrix[i][i] = 0
 
-# making connection between line
-for line in [line1,line2,line3,line4]:
-    making_connection_in_line(line)
+    # making connection between line
+    for line in [line1, line2, line3, line4]:
+        making_connection_in_line(line)
 
+    # making connection interchange station
+    # interchange_station = finding_interchange_station(total_site)
+    # 由于换乘站在两条线中都被考虑了，因此不应该单独为换乘站制作一个连接操作
 
-# making connection interchange station
-# interchange_station = finding_interchange_station(total_site)
-# 由于换乘站在两条线中都被考虑了，因此不应该单独为换乘站制作一个连接操作
-
-save = [total_site_list, line_list, Adjacent_matrix]
-with open("original_data.json",'w') as File:
-    json.dump(save,File)
+    save = [total_site_list, line_list, Adjacent_matrix]
+    return save
+    # with open("original_data.json", 'w') as File:
+    #     json.dumps(save)

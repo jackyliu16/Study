@@ -8,23 +8,23 @@ Reference:
 import json
 
 INF = 0x3f3f3f
-
+from typing import *
 
 class AdjMatrix:
-    def __init__(self, vertx: list, mat: list, model=0):
+    def __init__(self, vertx: List[int], mat: list, model=0):
         self.vertx = vertx
         self.mat = mat
         self.satNum = len(vertx)
         self.dist = 0
         self.path = 0
         self.outputDetail = "的最小路径长度为"
-        if model != 0:
-            self.outputDetail = "的最短站点数为"
+        if model == 1:
+            self.outputDetail = "之间最小站点数为，"
             for i in range(len(self.mat)):
                 for j in range(len(self.mat[i])):
-                    if self.mat[i][j] != INF and self.mat[i][j] != 0:
+                    # 对于其中的每一个元素进行遍历，如果该元素存在
+                    if self.mat[i][j] != 0 and self.mat[i][j] != INF:
                         self.mat[i][j] = 1
-
 
 
     def _floyd(self):
@@ -55,13 +55,14 @@ class AdjMatrix:
 
         return dist_matrix, path_matrix
 
-    def floyd(self, start: int, end: int):
+    def floyd(self, start, end):
         '''
         封装floyd算法的实现
-        :param start:   the index of start stations in vertx
-        :param end:     the index of end   stations in vertx
+        :param start:   the name of start stations in vertx
+        :param end:     the name of end   stations in vertx
         :return:
         '''
+        start, end = self.vertx.index(start), self.vertx.index(end)
         if self.dist == 0 or self.path == 0:
             # 如果还没有进行初始化
             self.dist, self.path = self._floyd()
@@ -73,7 +74,7 @@ class AdjMatrix:
             k = self.path[start][k]
         apath.append(self.vertx[start])
         apath.reverse()
-        print("{} 与 {} 之间的{}为{}， 其最短路径为：{}".format(self.vertx[start], self.vertx[end], self.outputDetail, self.dist[start][end], apath))
+        print("{} 与 {} 之间的{}为{}， 其路径为：{}".format(self.vertx[start], self.vertx[end], self.outputDetail, self.dist[start][end], apath))
 
 
 if __name__ == '__main__':
@@ -81,4 +82,4 @@ if __name__ == '__main__':
         json_data = json.load(File)
 
     graph = AdjMatrix(json_data[0], json_data[2],1)
-    graph.floyd(31,4)
+    graph.floyd("公园前","岗顶")
