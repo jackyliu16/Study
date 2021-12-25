@@ -9,7 +9,7 @@ Reference:
     PPT-第七章图的最小路径
 '''
 from typing import *
-from AdjGraph import ArcNode, AdjGraph
+from temp import ArcNode, AdjGraph
 
 INF = 0x3f3f3f
 
@@ -35,7 +35,7 @@ def From_AdjacencyList_Create_GraphAx(graph: AdjGraph, nodes: list) -> GraphAX:
     return temp
 
 
-def Floyd(graph: GraphAX) -> list:
+def floyd(graph: GraphAX) -> list:
     # 初始化二维数组【注： 此处不能在一行中进行赋值，否则会出现引用相同的情况】
     dist_matrix = [[0] * graph.vnum for i in range(graph.vnum)]
     path_matrix = [[0] * graph.vnum for i in range(graph.vnum)]
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     graph = From_AdjacencyList_Create_GraphAx(graph, nodes)
     # graph = GraphAX(nodes, graph)
     print(graph.mat)
-    dist_Matrix, path_Matrix = Floyd(graph)
+    dist_Matrix, path_Matrix = floyd(graph)
 
     # ''' 输入模块 '''
     start = input("请输入起点：")

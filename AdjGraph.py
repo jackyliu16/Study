@@ -1,58 +1,84 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
-'''
-@Target  ：测试样例 1 采用书本中实现的G1(p235)
-@Author  ：jackyliu
-@Date    ：2021/12/23 16:09 
-'''
+"""
+Author： 刘逸珑
+Time：   2021/12/25 9:46
+Reference:
+    https://zhuanlan.zhihu.com/p/106271601
+    PPT-第七章图的最小路径
+"""
+import json
+
 INF = 0x3f3f3f
 
 
-# 这个步骤通过人工手动从图片中获取信息，以生成邻接表
-class ArcNode:
-    def __init__(self, adjv, w):  # 采用类似于链表的形式生成
-        self.adjvex = adjv  # 邻接点
-        self.weight = w  # 边的权重
+class AdjMatrix:
+    def __init__(self, vertx: list, mat: list, model=0):
+        self.vertx = vertx
+        self.mat = mat
+        self.satNum = len(vertx)
+        self.dist = 0
+        self.path = 0
+        self.outputDetail = "的最小路径长度为"
+        if model != 0:
+            self.outputDetail = "的最短站点数为"
+            for i in range(len(self.mat)):
+                for j in range(len(self.mat[i])):
+                    if self.mat[i][j] != INF and self.mat[i][j] != 0:
+                        self.mat[i][j] = 1
 
 
-class AdjGraph:
-    def __init__(self, n=0, e=0):
-        self.adjlist = []  # 邻接表数组
-        self.vexs = []  # vex[i]存放顶点i的边数
-        # self.n = n  # 顶点数
-        # self.e = e          # 边数
 
-    def CreateAdjGraph(self, a):
-        self.n = len(a)
-        # 生成 self.vexs
-        for i in range(len(a)):
-            self.vexs.append(len(a[i]))
-        # 生成对应链表
-        for i in range(len(a)):
-            # 节点的出边
-            adi = []
-            for j in a[i]:
-                # 节点
-                adi.append(ArcNode(j[0], j[1]))
-            self.adjlist.append(adi)
+    def _floyd(self):
+        '''
+        实现 floyd 算法
+        :return:        dist_matrix, path_matrix
+        '''
+        # 如果在同一行进行赋值，则会出现指针引用相同的情况
+        dist_matrix = [[INF] * self.satNum for i in range(self.satNum)]
+        path_matrix = [[INF] * self.satNum for i in range(self.satNum)]
+        # initialization
+        for i in range(self.satNum):
+            for j in range(self.satNum):
+                dist_matrix[i][j] = self.mat[i][j]
+                if i != j and self.mat[i][j] < INF:
+                    # 如果边存在
+                    path_matrix[i][j] = i
+                else:
+                    path_matrix[i][j] = -1
 
-    def DisAdjGraph(self):
-        for i in range(self.n):
-            # 对于节点的出边进行遍历
-            print("[{0}]".format(i), end=" ")
-            for j in range(len(self.adjlist[i])):
-                print("->[{0},{1}]".format(self.adjlist[i][j].adjvex, self.adjlist[i][j].weight), end="")
-            print("->Λ")
+        for k in range(self.satNum):  # 中间点的选择
+            for i in range(self.satNum):
+                for j in range(self.satNum):
+                    if dist_matrix[i][j] > dist_matrix[i][k] + dist_matrix[k][j]:
+                        # if i->k->j is lower than i->j:
+                        dist_matrix[i][j] = dist_matrix[i][k] + dist_matrix[k][j]
+                        path_matrix[i][j] = path_matrix[k][j]
+
+        return dist_matrix, path_matrix
+
+    def floyd(self, start: int, end: int):
+        '''
+        封装floyd算法的实现
+        :param start:   the index of start stations in vertx
+        :param end:     the index of end   stations in vertx
+        :return:
+        '''
+        if self.dist == 0 or self.path == 0:
+            # 如果还没有进行初始化
+            self.dist, self.path = self._floyd()
+        # 输出结果
+        k = self.path[start][end]
+        apath = [self.vertx[end]]
+        while k != -1 and k != start:
+            apath.append(self.vertx[k])
+            k = self.path[start][k]
+        apath.append(self.vertx[start])
+        apath.reverse()
+        print("{} 与 {} 之间的{}为{}， 其最短路径为：{}".format(self.vertx[start], self.vertx[end], self.outputDetail, self.dist[start][end], apath))
 
 
-if __name__ == "__main__":
-    input = [
-        [[1, 1], [3, 1], [4, 1]],
-        [[0, 1], [2, 1], [3, 1]],
-        [[1, 1], [3, 1], [4, 1]],
-        [[0, 1], [1, 1], [2, 1], [4, 1]],
-        [[0, 1], [2, 1], [3, 1]]
-    ]
-    graph = AdjGraph()
-    graph.CreateAdjGraph(input)
-    graph.DisAdjGraph()
+if __name__ == '__main__':
+    with open('original_data.json', 'r') as File:
+        json_data = json.load(File)
+
+    graph = AdjMatrix(json_data[0], json_data[2],1)
+    graph.floyd(31,4)

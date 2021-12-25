@@ -1,16 +1,10 @@
-# 这是一个示例 Python 脚本。
+"""
+Author： 刘逸珑
+Time：   2021/12/25 11:21
+Reference:
 
-# 按 Shift+F10 执行或将其替换为您的代码。
-# 按 双击 Shift 在所有地方搜索类、文件、工具窗口、操作和设置。
+"""
+import GetData
 
-
-def print_hi(name):
-    # 在下面的代码行中使用断点来调试脚本。
-    print(f'Hi, {name}')  # 按 Ctrl+F8 切换断点。
-
-
-# 按间距中的绿色按钮以运行脚本。
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
+print("欢迎使用地铁路径自动规划系统！")
+model = int(input("请输入你想使用的模式名称：最短路径模式0，最少站点模式1，最少换乘模式2"))
