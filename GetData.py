@@ -33,13 +33,7 @@ def initialization():
             Adjacent_matrix[total_site_list.index(line[station_index + 1])][
                 total_site_list.index(line[station_index])] = rand
 
-    def finding_interchange_station(total_site: list) -> list:
-        dict_count = Counter(total_site)
-        interchange_station = []
-        for k, v in dict_count.items():
-            if v > 1:
-                interchange_station.append(k)
-        return interchange_station
+
 
     # source 1
     line1 = """广州东站
@@ -111,7 +105,8 @@ def initialization():
 梅花园
 燕塘
 广州东站
-林和西"""
+林和西
+体育西路"""
     line1 = line1.split("\n")
     line2 = line2.split("\n")
     line3 = line3.split("\n")

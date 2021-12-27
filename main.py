@@ -21,8 +21,10 @@ from AdjGraph import AdjMatrix
 #         print("欢迎下次使用本系统")
 #     return
 
+
+
 print("欢迎使用地铁路径自动规划系统！")
-model = int(input("请输入你想使用的模式名称：最短路径模式0，最少站点模式1，最少换乘模式2"))
+model = int(input("请输入你想使用的模式名称：最短路径模式0，最少站点模式1，最少换乘模式[如果输入换乘站会报错]2"))
 # json_data = GetData.initialization()
 GetData.initialization()
 with open("original_data.json", 'r') as File:
@@ -45,6 +47,6 @@ while flag:
         else:
             print("您输入的站点名称不存在！")
     else:
-        graph.floyd(start, end)
+        graph.interface(start, end)
 print("欢迎再次使用地铁路径自动规划系统!")
 
