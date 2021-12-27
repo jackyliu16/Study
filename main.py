@@ -29,7 +29,7 @@ model = int(input("请输入你想使用的模式名称：最短路径模式0，
 GetData.initialization()
 with open("original_data.json", 'r') as File:
     json_data = json.load(File)
-graph = AdjMatrix(json_data[0], json_data[2], model)
+graph = AdjMatrix(json_data,model)
 flag = True
 
 while flag:

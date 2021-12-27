@@ -154,8 +154,6 @@ class AdjMatrix:
     #
     #     temp = interTimes + 1  # 这个地方其实是想用interTimes++的
     #     self.__minTransfer(self.vertx.index(self.stack.pop()[0]), end, dist, temp)
-
-
     def interface(self, start, end):
         '''
         封装三种不同的程序执行方案
@@ -182,6 +180,7 @@ class AdjMatrix:
             # 获取起止点的index
             start_list = []
             end_list = []
+            # 考虑对应针对站点为换乘站的情况【有可能出现一个站对应多条站点的情况】
             for lineNum in range(len(self.line_list)):
                 for station in self.line_list[lineNum]:
                     if station == start:
@@ -189,11 +188,15 @@ class AdjMatrix:
                     if station == end:
                         end_list.append(lineNum)
 
-            min_choice = [start_list[0],end_list[0]]
-            for i in start_list:
-                for j in end_list:
-                    min_choice = i,j if self.dist[i][j] < self.dist[min_choice[0]][min_choice[1]] else min_choice[0],min_choice[1]
-            i,j = min_choice[0],min_choice[1]
+            print(start_list)
+            print(end_list)
+
+            # 这个部分的存在是为了解决一个站点对应多线路的情况
+            i, j = start_list[0], end_list[0]
+            for s in start_list:
+                for e in end_list:
+                    if self.dist[i][j] > self.dist[s][e] and s != e :
+                        i, j = s, e
             k = self.path[i][j]
             apath = [self.vertx[j]]
             # TODO 这个地方没有适配结果
@@ -211,4 +214,4 @@ if __name__ == '__main__':
         json_data = json.load(File)
 
     graph = AdjMatrix(json_data,2)
-    graph.interface("芳村", "岗顶")
+    graph.interface("公园前", "岗顶")
