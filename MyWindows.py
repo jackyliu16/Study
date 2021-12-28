@@ -9,6 +9,7 @@ Time：   2021/12/28 20:22
 """
 import json
 import tkinter as tk
+from tkinter import messagebox
 
 # windows
 import GetData
@@ -16,7 +17,7 @@ from AdjGraph import AdjMatrix
 
 window = tk.Tk()
 window.title("欢迎进入地铁线路规划系统")
-window.geometry("960x960")
+window.geometry("960x860")
 # put photo
 canvas = tk.Canvas(window, height=962, width=1098)
 image_file = tk.PhotoImage(file='Line.png')
@@ -24,7 +25,8 @@ image = canvas.create_image(0, 0, anchor='nw', image=image_file)
 canvas.pack(side='top')
 
 # Label and input
-tk.Label(window, text="您现在正在使用最小距离模式").place(x=90, y=100)
+information = tk.Label(window, text="您现在正在使用最小距离模式")
+information.place(x=90, y=100)
 tk.Label(window, text='始发站：').place(x=90, y=150)
 tk.Label(window, text='终止站：').place(x=90, y=190)
 
@@ -49,11 +51,34 @@ graph = AdjMatrix(json_data, model)
 
 # 计算函数
 def count():
-    print("count")
+    start_station = var_start_station.get()
+    end_station = var_end_station.get()
+    if start_station not in json_data[0] or end_station not in json_data[0]:
+        tk.messagebox.showinfo(title='Error!', message='你输入的站点不存在!')
+    else:
+        graph.interface(start_station, end_station)
+        # print(graph.parameter_passing)
+        tk.messagebox.showerror(title='计算结果', message=f"{graph.outputDetail}{graph.parameter_passing[2]}, \n"
+                                                      f"其对应路径为{graph.parameter_passing[3]}")
 
 
 def change_model():
-    print('changeModel')
+    global graph, model
+    model = graph.model
+    if model != 2:
+        model += 1
+    else:
+        model = 0
+    graph = AdjMatrix(json_data, model)
+    print(model)
+    if graph.model == 0:
+        information['text'] = "您现在正在使用最小距离模式"
+    elif graph.model == 1:
+        information['text'] = "您现在使用最小站数模式"
+    elif graph.model == 2:
+        information['text'] = "您现在正在使用最小换乘模式"
+    else:
+        information['text'] = "出现错误403"
 
 
 def quit_programme():

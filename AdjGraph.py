@@ -6,15 +6,15 @@ Reference:
     PPT-第七章图的最小路径
 """
 import json
-from functools import wraps
-import time
-import psutil
 import os
+import time
+from functools import wraps
 
-import GetData
+import psutil
 
 INF = 0x3f3f3f
 from typing import *
+
 
 def Testit(func):
     @wraps(func)
@@ -25,7 +25,9 @@ def Testit(func):
         print('{}.{} : {}'.format(func.__module__, func.__name__, end - start))
         print(u'当前进程的内存使用：%.4f MB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024))
         return r
+
     return wrapper
+
 
 def finding_interchange_station(line_list: list) -> list:
     total_site = []
@@ -38,17 +40,19 @@ def finding_interchange_station(line_list: list) -> list:
             interchange_station.append(k)
     return interchange_station
 
+
 class AdjMatrix:
-    def __init__(self, save:list, model=0):
-        self.vertx = save[0]    # 节点集合
-        self.line_list = save[1]# 保存各线的站点名称
-        self.mat = save[2]      # 节点邻接矩阵
-        self.satNum = len(self.vertx)   # 站点总数
-        self.dist = 0           # 距离矩阵
-        self.path = 0           # 前驱结点矩阵
+    def __init__(self, save: list, model=0):
+        self.vertx = save[0]  # 节点集合
+        self.line_list = save[1]  # 保存各线的站点名称
+        self.mat = save[2]  # 节点邻接矩阵
+        self.satNum = len(self.vertx)  # 站点总数
+        self.dist = 0  # 距离矩阵
+        self.path = 0  # 前驱结点矩阵
         self.outputDetail = "的最小路径长度为"
         self.model = model
         self.interStation = finding_interchange_station(self.line_list)
+        self.parameter_passing = []
         if model == 1:
             self.outputDetail = "之间最小站点数为，"
             print(self.satNum)
@@ -67,10 +71,8 @@ class AdjMatrix:
                 self.mat[i][i] = 0
                 for j in range(len(self.mat)):
                     for interStation in self.interStation:
-                        if interStation in self.line_list[i] and interStation in self.line_list[j] and i != j :
+                        if interStation in self.line_list[i] and interStation in self.line_list[j] and i != j:
                             self.mat[i][j] = 1
-
-
 
     @Testit
     def _floyd(self):
@@ -154,7 +156,7 @@ class AdjMatrix:
     #
     #     temp = interTimes + 1  # 这个地方其实是想用interTimes++的
     #     self.__minTransfer(self.vertx.index(self.stack.pop()[0]), end, dist, temp)
-    def interface(self, start:str, end:str):
+    def interface(self, start: str, end: str):
         '''
         封装三种不同的程序执行方案
         :param start:   the name of start stations in vertx
@@ -175,7 +177,10 @@ class AdjMatrix:
                 k = self.path[start][k]
             apath.append(self.vertx[start])
             apath.reverse()
-            print("{} 与 {} 之间的{}为{}， 其路径为：{}".format(self.vertx[start], self.vertx[end], self.outputDetail, self.dist[start][end], apath))
+            # 这个部分通过一个类变量对于结果进行传递
+            self.parameter_passing = [self.vertx[start], self.vertx[end], self.dist[start][end], apath]
+            print("{} 与 {} 之间的{}为{}， 其路径为：{}".format(self.vertx[start], self.vertx[end], self.outputDetail,
+                                                     self.dist[start][end], apath))
         elif self.model == 2:
             # 获取起止点的index
             start_list = []
@@ -195,7 +200,7 @@ class AdjMatrix:
             i, j = start_list[0], end_list[0]
             for s in start_list:
                 for e in end_list:
-                    if self.dist[i][j] > self.dist[s][e] and s != e :
+                    if self.dist[i][j] > self.dist[s][e] and s != e:
                         i, j = s, e
             k = self.path[i][j]
             apath = [self.vertx[j]]
@@ -205,6 +210,7 @@ class AdjMatrix:
                 k = self.path[i][k]
             apath.append(self.vertx[i])
             apath.reverse()
+            self.parameter_passing = [self.vertx[i], self.vertx[j], self.dist[i][j], apath]
             print("{} 与 {} 之间的{}为{}， 其路径为：{}".format(start, end, self.outputDetail,
                                                      self.dist[i][j], apath))
 
@@ -213,5 +219,5 @@ if __name__ == '__main__':
     with open('original_data.json', 'r') as File:
         json_data = json.load(File)
 
-    graph = AdjMatrix(json_data,2)
+    graph = AdjMatrix(json_data, 2)
     graph.interface("公园前", "岗顶")

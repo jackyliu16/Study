@@ -5,6 +5,7 @@ Reference:
 
 """
 import json
+
 import GetData
 from AdjGraph import AdjMatrix
 
@@ -21,15 +22,13 @@ from AdjGraph import AdjMatrix
 #         print("欢迎下次使用本系统")
 #     return
 
-
-
 print("欢迎使用地铁路径自动规划系统！")
 model = int(input("请输入你想使用的模式名称：最短路径模式0，最少站点模式1，最少换乘模式[如果输入换乘站会报错]2"))
 # json_data = GetData.initialization()
 GetData.initialization()
 with open("original_data.json", 'r') as File:
     json_data = json.load(File)
-graph = AdjMatrix(json_data,model)
+graph = AdjMatrix(json_data, model)
 flag = True
 
 while flag:
@@ -41,12 +40,11 @@ while flag:
         if start.upper() == "CM" or end.upper() == "CM":
             model = int(input("请输入你想使用的模式名称：最短路径模式0，最少站点模式1，最少换乘模式2"))
             del graph
-            graph = AdjMatrix(json_data[0], json_data[2], model)
-        elif start.lower()  == "exit" or end.lower() == "exit":
+            graph = AdjMatrix(json_data, model)
+        elif start.lower() == "exit" or end.lower() == "exit":
             flag = False
         else:
             print("您输入的站点名称不存在！")
     else:
         graph.interface(start, end)
 print("欢迎再次使用地铁路径自动规划系统!")
-
