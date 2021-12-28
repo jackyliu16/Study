@@ -3,9 +3,12 @@ Author： 刘逸珑
 Time：   2021/12/28 20:22
 
 @Reference:
+# 窗口实现相关
     https://blog.csdn.net/Jason_WangYing/article/details/108916236
     https://blog.csdn.net/weixin_40450867/article/details/81431718
-
+打包相关：
+    https://blog.csdn.net/qq_33521184/article/details/89391354
+    https://blog.csdn.net/qq_42063091/article/details/82423221
 """
 import json
 import tkinter as tk
@@ -58,8 +61,9 @@ def count():
     else:
         graph.interface(start_station, end_station)
         # print(graph.parameter_passing)
-        tk.messagebox.showerror(title='计算结果', message=f"{graph.outputDetail}{graph.parameter_passing[2]}, \n"
-                                                      f"其对应路径为{graph.parameter_passing[3]}")
+        tk.messagebox.showinfo(title='计算结果', message=f"{start_station}与{end_station}{graph.outputDetail}"
+                                                      f"{graph.parameter_passing[2]}, \n"
+                                                      f"其路径为{graph.parameter_passing[3]}")
 
 
 def change_model():
@@ -69,6 +73,7 @@ def change_model():
         model += 1
     else:
         model = 0
+    del graph
     graph = AdjMatrix(json_data, model)
     print(model)
     if graph.model == 0:
@@ -79,6 +84,7 @@ def change_model():
         information['text'] = "您现在正在使用最小换乘模式"
     else:
         information['text'] = "出现错误403"
+        tk.messagebox.showerror('警告！', '出现错误304')
 
 
 def quit_programme():

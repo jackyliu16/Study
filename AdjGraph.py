@@ -45,24 +45,26 @@ class AdjMatrix:
     def __init__(self, save: list, model=0):
         self.vertx = save[0]  # 节点集合
         self.line_list = save[1]  # 保存各线的站点名称
-        self.mat = save[2]  # 节点邻接矩阵
+        self.mat = save[2].copy()  # 节点邻接矩阵
+        # TODO 发现不知名bug，应该涉及到 python中数组的引用传递问题
         self.satNum = len(self.vertx)  # 站点总数
         self.dist = 0  # 距离矩阵
         self.path = 0  # 前驱结点矩阵
         self.outputDetail = "的最小路径长度为"
         self.model = model
         self.interStation = finding_interchange_station(self.line_list)
-        self.parameter_passing = []
-        if model == 1:
+        self.parameter_passing = []     # 注： 这个地方只是为了不影响到main程序的正常使用，并且也不想修改太多东西，因此偷懒了
+        if self.model == 0:
+            pass
+        elif self.model == 1:
             self.outputDetail = "之间最小站点数为，"
-            print(self.satNum)
             for i in range(len(self.mat)):
-                self.mat[i][i] = 0
+                # self.mat[i][i] = 0
                 for j in range(len(self.mat[i])):
                     # 对于其中的每一个元素进行遍历，如果该元素存在
                     if self.mat[i][j] != 0 and self.mat[i][j] != INF:
                         self.mat[i][j] = 1
-        if model == 2:
+        elif self.model == 2:
             self.satNum = len(self.line_list)
             self.outputDetail = "之间最少的换乘次数为,"
             # 创造一个全新的矩阵来对于这种特殊的情况进行承载
@@ -73,16 +75,18 @@ class AdjMatrix:
                     for interStation in self.interStation:
                         if interStation in self.line_list[i] and interStation in self.line_list[j] and i != j:
                             self.mat[i][j] = 1
+        print(self.mat)
 
     @Testit
     def _floyd(self):
-        '''
+        """
         实现 floyd 算法
         :return:        dist_matrix, path_matrix
-        '''
+        """
         # 如果在同一行进行赋值，则会出现指针引用相同的情况
         dist_matrix = [[INF] * self.satNum for i in range(self.satNum)]
         path_matrix = [[INF] * self.satNum for i in range(self.satNum)]
+
         # initialization
         for i in range(self.satNum):
             for j in range(self.satNum):
@@ -157,12 +161,12 @@ class AdjMatrix:
     #     temp = interTimes + 1  # 这个地方其实是想用interTimes++的
     #     self.__minTransfer(self.vertx.index(self.stack.pop()[0]), end, dist, temp)
     def interface(self, start: str, end: str):
-        '''
+        """
         封装三种不同的程序执行方案
         :param start:   the name of start stations in vertx
         :param end:     the name of end   stations in vertx
         :return:
-        '''
+        """
 
         if self.dist == 0 or self.path == 0:
             # 如果还没有进行初始化
