@@ -14,9 +14,7 @@
     2. https://gzmtr.com/
 '''
 
-import json
 import random
-from collections import Counter
 
 INF = 0x3f3f3f
 
@@ -32,8 +30,6 @@ def initialization():
                 total_site_list.index(line[station_index + 1])] = rand
             Adjacent_matrix[total_site_list.index(line[station_index + 1])][
                 total_site_list.index(line[station_index])] = rand
-
-
 
     # source 1
     line1 = """广州东站

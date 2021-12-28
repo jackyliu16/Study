@@ -154,7 +154,7 @@ class AdjMatrix:
     #
     #     temp = interTimes + 1  # 这个地方其实是想用interTimes++的
     #     self.__minTransfer(self.vertx.index(self.stack.pop()[0]), end, dist, temp)
-    def interface(self, start, end):
+    def interface(self, start:str, end:str):
         '''
         封装三种不同的程序执行方案
         :param start:   the name of start stations in vertx
@@ -188,8 +188,8 @@ class AdjMatrix:
                     if station == end:
                         end_list.append(lineNum)
 
-            print(start_list)
-            print(end_list)
+            print(f"start list: {start_list}")
+            print(f"end list: {end_list}")
 
             # 这个部分的存在是为了解决一个站点对应多线路的情况
             i, j = start_list[0], end_list[0]

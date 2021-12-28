@@ -11,56 +11,53 @@ import tkinter.messagebox
 # 窗口
 window = tk.Tk()
 window.title('欢迎进入学习系统')
-window.geometry('960x960')
+window.geometry('450x300')
 # 画布放置图片
-canvas = tk.Canvas(window, height=962, width=800)
-imagefile = tk.PhotoImage(file='Line.png')
-image = canvas.create_image(0, 0, anchor='nw', image=imagefile)
+canvas = tk.Canvas(window, height=300, width=500)
+# imagefile=tk.PhotoImage(file='qm.png')
+# image=canvas.create_image(0,0,anchor='nw',image=imagefile)
 canvas.pack(side='top')
 # 标签 用户名密码
-tk.Label(window, text='起始站点:').place(x=100, y=150)
-tk.Label(window, text='终止站点:').place(x=100, y=190)
-# 起始点输入
-start_station = tk.StringVar()
-entry_usr_name = tk.Entry(window, textvariable=start_station)
-entry_usr_name.place(x=170, y=150)
-# 终止站输入
-end_station = tk.StringVar()
-entry_usr_pwd = tk.Entry(window, textvariable=end_station, show='*')
-entry_usr_pwd.place(x=170, y=190)
+tk.Label(window, text='用户名:').place(x=100, y=150)
+tk.Label(window, text='密码:').place(x=100, y=190)
+# 用户名输入框
+var_usr_name = tk.StringVar()
+entry_usr_name = tk.Entry(window, textvariable=var_usr_name)
+entry_usr_name.place(x=160, y=150)
+# 密码输入框
+var_usr_pwd = tk.StringVar()
+entry_usr_pwd = tk.Entry(window, textvariable=var_usr_pwd, show='*')
+entry_usr_pwd.place(x=160, y=190)
 
 
 # 登录函数
 def usr_log_in():
     # 输入框获取用户名密码
-    usr_name = start_station.get()
-    usr_pwd = end_station.get()
-
-
-
-    # #从本地字典获取用户信息，如果没有则新建本地数据库
-    # try:
-    #     with open('usr_info.pickle','rb') as usr_file:
-    #         usrs_info=pickle.load(usr_file)
-    # except FileNotFoundError:
-    #     with open('usr_info.pickle','wb') as usr_file:
-    #         usrs_info={'admin':'admin'}
-    #         pickle.dump(usrs_info,usr_file)
-    # #判断用户名和密码是否匹配
-    # if usr_name in usrs_info:
-    #     if usr_pwd == usrs_info[usr_name]:
-    #         tk.messagebox.showinfo(title='welcome',
-    #                                message='欢迎您：'+usr_name)
-    #     else:
-    #         tk.messagebox.showerror(message='密码错误')
-    # #用户名密码不能为空
-    # elif usr_name=='' or usr_pwd=='' :
-    #     tk.messagebox.showerror(message='用户名或密码为空')
-    # #不在数据库中弹出是否注册的框
-    # else:
-    #     is_signup=tk.messagebox.askyesno('欢迎','您还没有注册，是否现在注册')
-    #     if is_signup:
-    #         usr_sign_up()
+    usr_name = var_usr_name.get()
+    usr_pwd = var_usr_pwd.get()
+    # 从本地字典获取用户信息，如果没有则新建本地数据库
+    try:
+        with open('usr_info.pickle', 'rb') as usr_file:
+            usrs_info = pickle.load(usr_file)
+    except FileNotFoundError:
+        with open('usr_info.pickle', 'wb') as usr_file:
+            usrs_info = {'admin': 'admin'}
+            pickle.dump(usrs_info, usr_file)
+    # 判断用户名和密码是否匹配
+    if usr_name in usrs_info:
+        if usr_pwd == usrs_info[usr_name]:
+            tk.messagebox.showinfo(title='welcome',
+                                   message='欢迎您：' + usr_name)
+        else:
+            tk.messagebox.showerror(message='密码错误')
+    # 用户名密码不能为空
+    elif usr_name == '' or usr_pwd == '':
+        tk.messagebox.showerror(message='用户名或密码为空')
+    # 不在数据库中弹出是否注册的框
+    else:
+        is_signup = tk.messagebox.askyesno('欢迎', '您还没有注册，是否现在注册')
+        if is_signup:
+            usr_sign_up()
 
 
 # 注册函数
@@ -79,7 +76,7 @@ def usr_sign_up():
         except FileNotFoundError:
             exist_usr_info = {}
 
-            # 检查用户名存在、密码为空、密码前后不一致
+        # 检查用户名存在、密码为空、密码前后不一致
         if nn in exist_usr_info:
             tk.messagebox.showerror('错误', '用户名已存在')
         elif np == '' or nn == '':
@@ -123,11 +120,11 @@ def usr_sign_quit():
 
 
 # 登录 注册按钮
-bt_login = tk.Button(window, text='进行计算', command=usr_log_in)
+bt_login = tk.Button(window, text='登录', command=usr_log_in)
 bt_login.place(x=140, y=230)
-bt_logup = tk.Button(window, text='更换模式', command=usr_sign_up)
-bt_logup.place(x=220, y=230)
+bt_logup = tk.Button(window, text='注册', command=usr_sign_up)
+bt_logup.place(x=210, y=230)
 bt_logquit = tk.Button(window, text='退出', command=usr_sign_quit)
-bt_logquit.place(x=300, y=230)
+bt_logquit.place(x=280, y=230)
 # 主循环
 window.mainloop()
