@@ -57,7 +57,7 @@ def count():
     start_station = var_start_station.get()
     end_station = var_end_station.get()
     if start_station not in json_data[0] or end_station not in json_data[0]:
-        tk.messagebox.showinfo(title='Error!', message='你输入的站点不存在!')
+        tk.messagebox.showerror(title='Error!', message='你输入的站点不存在!')
     else:
         graph.interface(start_station, end_station)
         # print(graph.parameter_passing)
