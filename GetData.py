@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-'''
+"""
 @Target  ：按照线路图生成邻接矩阵并且保存到json中方便进一步调用
 @Author  ：jackyliu
 @Date    ：2021/12/25 1:16
@@ -12,7 +12,7 @@
 @data source:
     1. http://gz.bendibao.com/ditie/xl_215.shtml
     2. https://gzmtr.com/
-'''
+"""
 
 import random
 
@@ -21,14 +21,14 @@ INF = 0x3f3f3f
 
 def initialization():
     def making_connection_in_line(line: list):
-        nonlocal Adjacent_matrix
+        nonlocal adjacent_matrix
         nonlocal total_site_list
         for station_index in range(0, len(line) - 1):
             # 不能使之等于倒数第二个元素
             rand = int(random.random() * 100 + 1)
-            Adjacent_matrix[total_site_list.index(line[station_index])][
+            adjacent_matrix[total_site_list.index(line[station_index])][
                 total_site_list.index(line[station_index + 1])] = rand
-            Adjacent_matrix[total_site_list.index(line[station_index + 1])][
+            adjacent_matrix[total_site_list.index(line[station_index + 1])][
                 total_site_list.index(line[station_index])] = rand
 
     # source 1
@@ -118,11 +118,11 @@ def initialization():
     total_site_list.sort(key=total_site.index)
 
     # initialization
-    Adjacent_matrix = [[INF] * len(total_site_list) for i in range(len(total_site_list))]
+    adjacent_matrix = [[INF] * len(total_site_list) for i in range(len(total_site_list))]
 
     # initialization the distance of station : make sure the distance from a station to a station is 0
-    for i in range(len(Adjacent_matrix)):
-        Adjacent_matrix[i][i] = 0
+    for i in range(len(adjacent_matrix)):
+        adjacent_matrix[i][i] = 0
 
     # making connection between line
     for line in [line1, line2, line3, line4]:
@@ -132,7 +132,7 @@ def initialization():
     # interchange_station = finding_interchange_station(total_site)
     # 由于换乘站在两条线中都被考虑了，因此不应该单独为换乘站制作一个连接操作
 
-    save = [total_site_list, line_list, Adjacent_matrix]
+    save = [total_site_list, line_list, adjacent_matrix]
     return save
     # with open("original_data.json", 'w') as File:
     #     json.dumps(save)

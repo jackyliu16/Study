@@ -10,7 +10,6 @@ import copy
 import json
 import os
 import time
-from copy import deepcopy
 from functools import wraps
 
 import psutil
@@ -62,8 +61,8 @@ class AdjMatrix:
         # bug 修复: 原因在于self.mat其实是被指向了与save的同一个内存地址，而非重新创建了一个内存地址，
         # 因而会更改形参save也就是输入的json_data中所指向的内存地址中的数据
         self.satNum = len(self.vertx)  # 站点总数
-        self.dist = 0  # 距离矩阵
-        self.path = 0  # 前驱结点矩阵
+        self.dist = []  # 距离矩阵
+        self.path = []  # 前驱结点矩阵
         self.outputDetail = "的最小路径长度为"  # 对于不同模式的输出信息调整
         self.model = model  # 模式名称
         self.interStation = finding_interchange_station(self.line_list)
@@ -80,7 +79,7 @@ class AdjMatrix:
                         self.mat[i][j] = 1
         elif self.model == 2:
             self.satNum = len(self.line_list)
-            self.outputDetail = "之间最少的换乘次数为,"
+            self.outputDetail = "之间最少的换乘次数为"
             # 创造一个全新的矩阵来对于这种特殊的情况进行承载
             self.mat = [[INF] * len(self.line_list) for i in range(len(self.line_list))]
             for i in range(len(self.mat)):
@@ -120,9 +119,9 @@ class AdjMatrix:
 
         return dist_matrix, path_matrix
 
-    def DisPath(self, start : int, end : int):
+    def dis_path(self, start: int, end: int):
         """
-        实现结果（最小路径/站数/换乘站数)以及路径的呈现
+        实现结果（最小路径 /站数)以及路径的呈现
         :param start:   the index of start station in self.vertx
         :param end:     the index of end station in self.vertx
         :return:
@@ -139,6 +138,55 @@ class AdjMatrix:
         print("{} 与 {} 之间的{}为{}， 其路径为：{}".format(self.vertx[start], self.vertx[end], self.outputDetail,
                                                  self.dist[start][end], apath))
 
+    def dis_path_min_interchange_station(self, start_station: str, end_station: str, start: int, end: int):
+        """
+        专门提供最小换乘站的路线输出【注：在此处输入的 start and end 代表 self.path 中的 start_index and end_index】
+        :param start_station:   the name of start stations in vertx
+        :param end_station:     the name of end   stations in vertx
+        :param start:           输入的最优起始线路
+        :param end:             输入的最优终止线路
+        :return:                void
+        """
+        # 注意：在修改算法之后apath中保存的是经过的线路名称的index
+        k = self.path[start][end]
+        apath = []
+        while k != -1 and k != start:
+            # 这个地方的 k 代表的是经过的线路的index
+            apath.append(k)
+            k = self.path[start][k]
+        apath.reverse()
+
+        # 首先，获取线路中经过的线路名称
+        way_line = []
+        if start == end:
+            way_line.append(start)
+        elif apath :
+            way_line.append(start)
+            for i in apath:
+                way_line.append(i)
+            way_line.append(end)
+        else:
+            way_line.append(start)
+            way_line.append(end)
+        print("way_line:", way_line)
+
+        for i in range(len(way_line)):
+            way_line[i] += 1
+        # 然后再获取每两个线路之间的换乘站点
+        interchange_station = []
+        # if len(way_line) == 1:
+        #     pass
+        # if len(way_line) > 1:
+        #     for i in range(0,len(way_line)-1):
+        #         for interstation in self.interStation:
+        #             for line in self.line_list:
+        #                 if interstation in
+
+
+        self.parameter_passing = [start_station, end_station, self.dist[start][end], way_line]
+        print("{}与{}之间的{}{}，其路径为{}".format(start_station, end_station,
+                                           self.outputDetail, (self.dist[start][end]), way_line))
+
     def interface(self, start: str, end: str):
         """
         封装三种不同的程序执行方案
@@ -152,10 +200,13 @@ class AdjMatrix:
         # 输出结果
         if self.model == 0 or self.model == 1:
             start, end = self.vertx.index(start), self.vertx.index(end)
-            self.DisPath(start,end)
+            self.dis_path(start, end)
 
         elif self.model == 2:
-            # 获取起止点的index
+            print("start")
+            print(start, end)
+            self.dist, self.path = self._floyd()
+            # 获取起止点，终止点在线路在 line_list 中的 index
             start_list = []
             end_list = []
             # 考虑对应针对站点为换乘站的情况【有可能出现一个站对应多条站点的情况】
@@ -163,6 +214,7 @@ class AdjMatrix:
                 for station in self.line_list[lineNum]:
                     if station == start:
                         start_list.append(lineNum)
+                        print(self.line_list[lineNum])
                     if station == end:
                         end_list.append(lineNum)
             # 这个部分的存在是为了解决一个站点对应多线路的情况
@@ -172,7 +224,8 @@ class AdjMatrix:
                 for e in end_list:
                     if self.dist[i][j] > self.dist[s][e] and s != e:
                         i, j = s, e
-            self.DisPath(i,j)
+            print(i, j)
+            self.dis_path_min_interchange_station(start, end, i, j)
 
 
 if __name__ == '__main__':
@@ -180,4 +233,4 @@ if __name__ == '__main__':
         json_data = json.load(File)
 
     graph = AdjMatrix(json_data, 2)
-    graph.interface("公园前", "岗顶")
+    graph.interface("岗顶", "江南西")
