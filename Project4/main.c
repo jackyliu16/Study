@@ -18,12 +18,12 @@ struct pcb						//PCB
 	int state;					//状态 0-就绪，1－运行，2－堵塞
 	int pior;					//优先级,MAXPIOR为最高优先级*/
 	int life;					//生命期*/
-	struct pcb *next;			/*指针 */
+	struct pcb *next;				/* 指针 */
 } *array[MAXPIOR];
 // 创建一个 pcb *array[3];
 
-static int idlist[LEN];			/*标识符表 */
-int life = 0;					/*总生命期初始化为0 */
+static int idlist[LEN];				/* 标识符表 */
+int life = 0;					/* 总生命期初始化为0 */
 char str[20];
 char command[7][10];
 int killtest = 0;
