@@ -1,116 +1,195 @@
-#include "basic.h"
-pnode *proot;					//system process tree root
-pnode *plink;					//system process link head
-//create process
-int createpc(int *para)
-{
-	//add your code here
-	pnode *p, *p1, *pp;
-	int pflag;
-	pflag = 0;
-	for (p = plink; p; p = p->next) {
-		if (p->node->pid == para[0])	//check if this pid is already exist
-		{
-			printf("pid %d is already exist!\n", para[0]);
-			return -1;
-		}
-		if (p->node->pid == para[1])	//find parent pcb
-		{
-			pflag = 1;
-			pp = p;
-		}
+#inlude "basic.h"
+ 
+semphore sem[5]; 	//deinfe 5 semphores
+pnode * pr[20]; 	//define 0-19 total 20 process
+//down operation 
+
+ void down(char * sname,int pid) 
+{ 
+	int fflag,pflag; 
+	pnode *p,*p1; 
+	semphore *s;  
+	fflag=0; 
+	pflag=0; 
+	int i;
+	
+	for(i=0;i<5;i++)
+		if(!strcmp(sem[i].name,sname))//find semaphore by name 
+		{ 
+			s=&sem[i]; 
+			fflag=1; 
+			break; 	
+		} 
+	for(i=0;i<20;i++)   //find pcb by pid 
+		if(pr[i]->node->pid == pid) 	
+		{ 
+			p1 = pr[i];     
+			pflag=1; 
+			break; 
+		} 
+	if(!fflag)  //semaphore is not exist 
+	{ 
+		printf("the semphore '%s' is not exist!\n",sname); 
+		return; 
+	} 
+	if(!pflag)  //pid is not exist 
+	{ 
+		printf("the process '%d' is not exist!\n",pid); 
+		return; 
+	} 
+	s->count--;   					//semaphore! s value -1
+	if(s->count>=0) //this pcb get the semaphore 如果当前进程没有运行完 
+		s->curpid = p1->node->pid; 	// 设定当前信号量对饮的进程号 
+	else 
+	{ 
+	// 如果当前进程的信号量降为0，则从等待队列中寻求下一个元素 ？？？ 
+		if(s->wlist)  //the link is not NULL, add the pcb to the last 
+	    { 
+			for(p=s->wlist;p->next;p=p->next);   
+			p->next=p1; 
+		}  
+		else  //this pcb is the first pcb be added to the down list 
+		    s->wlist=p1; 
+	} 
+} 
+ 
+//up operation 
+void up(char *sname) 
+{ 
+	int fflag=0; 
+	for(int i=0;i<5;i++) {
+	
+		if(!strcmp(sem[i].name,sname)) //find the semaphore by name 
+		{ 
+			fflag=1; 
+			break; 
+		} 
+		if(fflag)  //find it 
+		{ 
+			sem[i].count++; 
+			if(sem[i].wlist)  //there are processes in the down list 
+			{ 
+				sem[i].curpid = sem[i].wlist->node->pid; 
+				sem[i].wlist = sem[i].wlist->next; 
+			} 
+		} 
+		else
+		 	printf("the semphore '%s' is not exist!\n",sname); 
 	}
-	if (!pflag) {
-		printf("parent id %d is not exist!\n", para[1]);
-		return -2;
-	}
-//init new pcb
-	p1 = new pnode;
-	p1->node = new pcb;
-	p1->node->pid = para[0];
-	p1->node->ppid = para[1];
-	p1->node->prio = para[2];
-	p1->sub = NULL;
-	p1->next = NULL;
-	p1->brother = NULL;
-//add to process tree
-	if (!pp->sub)
-		pp->sub = p1;
-	else {
-		for (p = pp->sub; p->brother; p = p->brother);
-		p->brother = p1;
-	}
-// add to process link
-	for (p = plink; p->next; p = p->next);
-	p->next = p1;
+} 
+
+//show semphore infomation 
+void showdetail() 
+{ 
+	int i; 
+	pnode *p; 
+	printf("\n"); 
+	// 遍历五个信号 - 逐一输出他们的 
+	for(i=0;i<5;i++)  
+	{ 
+		// 有点不太理解这个计数值是干嘛用的，大体上是类似于之前的那个showdetail 
+		if(sem[i].count<=0) 
+		{ 
+			printf("%s (current_process  %d):  ",sem[i].name,sem[i].curpid); 
+			p=sem[i].wlist; 	
+			while(p)
+			{ 
+				printf("%5d",p->node->pid); 
+				p=p->next; 
+			} 
+		} 
+		else // 如果当前semphore不存在挂载的进程 
+			printf("%s :  ",sem[i].name); 
+		printf("\n"); 
+	} 
+} 
+ 
+/***************************************************************/ 
+// init semphore and process array 
+void init() 
+{ 
+	//init semaphore 
+	strcat(sem[0].name,"s0"); 
+	strcat(sem[1].name,"s1"); 
+	strcat(sem[2].name,"s2"); 
+	strcat(sem[3].name,"s3"); 
+	strcat(sem[4].name,"s4"); 
+	// 对于 semaphore 进行逐步初始化 
+	for(int i=0;i<5;i++) 
+	{ 
+		sem[i].wlist=NULL; 
+		sem[i].count=1; 
+	} 
+	//init process 初始化20个进程，但是我不太理解这个为啥要这样搞 
+	for(int i=0;i<20;i++) 
+	{ 
+		pr[i] = new pnode;
+		pr[i]->node=new pcb; 
+		pr[i]->node->pid=i; 
+		pr[i]->brother=NULL; 
+		pr[i]->next=NULL; 
+		pr[i]->sub=NULL; 
+	} 
+} 
+ 
+int main() 
+{ 
+	short cflag,pflag; 
+	char cmdstr[32]; 
+	char *s,*s1,*s2; 
+	
+	initerror(); 
+	init(); 
+	
+	for(;;) 
+	{ 
+		cflag=0; 
+		pflag=0; 
+		printf("cmd:"); 
+		scanf("%s",cmdstr); 
+		if(!strcmp(cmdstr,"exit"))  //exit the program 
+		break; 
+		if(!strcmp(cmdstr,"showdetail")) 
+		{ 
+			cflag = 1; 
+			pflag = 1; 
+			showdetail(); 
+		} 
+		else 
+		{ 
+			s = strstr(cmdstr,"down"); 	//create process 
+			if(s) 
+			{ 
+				cflag=1; 
+				//get parameter 
+				s1 = substr(s,instr(s,'(')+1,instr(s,',')-1); 
+				s2 = substr(s,instr(s,',')+1,instr(s,')')-1); 
+				if(s1 && s2) 			// 如果二者非空 
+				{ 
+					down(s1,atoi(s2)); 	// atoi: 丢弃任何空白字符 
+					pflag=1; 
+				} 
+			} 
+			else 
+			{ 
+				s=strstr(cmdstr,"up");	//delete process 
+				if(s) 
+				{ 
+					cflag=1; 
+					s1 = substr(s,instr(s,'(')+1,instr(s,')')-1); 
+					if(s1) 
+					{ 
+						up(s1); 
+						pflag=1; 
+					} 
+				} 
+			} 
+		} 
+		if(!cflag) 
+			geterror(0); 
+		else if(!pflag) 
+			geterror(1);   
+		} 
 	return 0;
-}
+} 
 
-//show process detail
-void showdetail()
-{
-	//add your code here
-	pnode *p, *p1;
-	p = plink;
-	for (; p;)					//print all pcb info
-	{
-		printf("%d(prio %d):", p->node->pid, p->node->prio);
-		p1 = p->sub;
-		for (; p1;)				//print sub pcb
-		{
-			printf("%d(prio %d)", p1->node->pid, p1->node->prio);
-			p1 = p1->brother;
-		}
-		printf("\n");
-		p = p->next;
-	}
-	printf("\n");
-}
-
-//don't change
-int main()
-{
-	initerror();
-	short cflag, pflag;
-	char cmdstr[32];
-	proot = new pnode;
-	proot->node = new pcb;
-	proot->node->pid = 0;
-	proot->node->ppid = -1;
-	proot->node->prio = 0;
-	proot->next = NULL;
-	proot->sub = NULL;
-	proot->brother = NULL;
-	plink = proot;
-	for (;;) {
-		cflag = 0;
-		pflag = 0;
-		printf("cmd:");
-		scanf("%s", cmdstr);
-		if (!strcmp(cmdstr, "exit"))	//exit the program
-			break;
-		if (!strcmp(cmdstr, "showdetail")) {
-			cflag = 1;
-			pflag = 1;
-			showdetail();
-		}
-		else {
-			int *para;
-			char *s, *s1;
-			s = strstr(cmdstr, "createpc");	//create process
-			if (s) {
-				cflag = 1;
-				para = (int *) malloc(3);
-				//getparameter
-				s1 = substr(s, instr(s, '(') + 1, strlen(s) - 2);	//get param string
-				para = strtoarray(s1);	//get parameter
-				createpc(para);	//create process
-				pflag = 1;
-			}
-		}
-		if (!cflag)
-			geterror(0);
-		else if (!pflag)
-			geterror(1);
-	}
-}

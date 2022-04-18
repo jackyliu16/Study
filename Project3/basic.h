@@ -1,4 +1,4 @@
-#ifndef basic_h
+#ifdef basic_h
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
@@ -21,7 +21,7 @@ struct pnode
 {
 	pcb *node;
 	pnode *sub;			// 子节点 ？ 
-	pnode *brother;		// 兄弟节点  
+	pnode *brother;		// 兄弟节点 
 	pnode *next;		// 实现就绪链表 
 };
 
@@ -33,7 +33,7 @@ struct semphore{
 	pnode *wlist; 		//等待链表	用于链接所有等待该资源的进程
 };
 #define geterror(eno) printf("%s\n",errormsg[eno])
-
+ 
 void initerror()
 {
 	errormsg[0] = (char *)malloc(20);
@@ -55,10 +55,10 @@ char * substr(char *s,int start,int end)
 	int i;
 	int len = strlen(s);
 	if(start<0 || end>=len || start>end)
-        return NULL;
+	    return NULL;
 	s1=(char *)malloc(end-start+2);
 	for(i=0;i<=end-start;i++)
-        s1[i] = s[i+start];
+	    s1[i] = s[i+start];
 	s1[i]='\0';
 	return s1;
 }
@@ -68,7 +68,7 @@ int instr(char *s,char c)
 	unsigned i;
 	for(i=0;i<strlen(s);i++)
 		if(s[i]==c)
-            return i;
+		   return i;
 	return -1;
 }
 //change the string to array data
@@ -86,7 +86,7 @@ int * strtoarray(char *s)
 	s1=s;
 	for(i=0;i<strlen(s1);i++)
 		if(s1[i]==',')
-            count++;
+		   count++;
 	count++;
 	a = (int *)malloc(count);
 	c=',';
@@ -94,13 +94,14 @@ int * strtoarray(char *s)
 	{
 		x1 = instr(s1,c);
 		if(x1>=0)
-            s2=substr(s1,0,x1-1);
+		    s2=substr(s1,0,x1-1);
 		else
-            s2=s1;
+		    s2=s1;
 		a[i]=atoi(s2);
 		if(c==',')
-            s1=substr(s1,x1+1,strlen(s1)-1);
+		    s1=substr(s1,x1+1,strlen(s1)-1);
 	}
 	return a;
 }
 #endif
+

@@ -218,7 +218,7 @@ void kill(int x)
 		else {						
 			q->next = p->next;		// delete node[q->next == p]
 			idlist[x] = 0;
-			life = life - (p->life);// ??? 这个总生命期的概念是否相当于这个程序的总生命周期
+			life = life - (p->life); 	// ??? 这个总生命期的概念是否相当于这个程序的总生命周期
 			free(p);
 		}
 	}
