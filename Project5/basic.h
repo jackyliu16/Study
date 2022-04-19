@@ -61,7 +61,7 @@ void initerror()
 }
 
 //get a substring in string s
-char * substr(char *s,int start,int end)
+char * substr(const char *s,int start,int end)
 {
 	char *s1;
 	int i;
@@ -91,11 +91,11 @@ int * strtoarray(char *s)
 	char c, *s1,*s2;
 	if(!s)
 	{
-		printf("string can't be null!\n");
+		printf("param can't be null!\n");
 		return NULL;
 	}
-	count=0;
-	s1=s;
+	count=0;			// 数字个数
+	s1=s;				
 	for(i=0;i<strlen(s1);i++)
 		if(s1[i]==',')
             count++;
