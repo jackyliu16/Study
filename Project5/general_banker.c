@@ -147,12 +147,13 @@ void showdetail(){
  * @brief 对于当前的Allocation进行安全性检查，检查分配完是否会出现死锁
  */
 bool security_check(){
-	int work[NS];
+	int work[NS], Safety_list[NP];
+	int *p = Safety_list;
+	bool Finish[NP];
+	memset(Finish, false, NP);		
 	for ( int i = 0 ; i < NS ; i++ ) {
 		work[i] = Available[i];
 	}
-	bool Finish[NP];
-	memset(Finish, false, NP);		
 	// void *memset(void *str, int c, size_t n) 复制字符 c（一个无符号字符）到参数 str 所指向的字符串的前 n 个字符
 
 	check_again:
@@ -171,6 +172,7 @@ bool security_check(){
 			work[j] += Allocation[i][j];
 			Finish[i] = true;
 		}
+		*(p++) = i;
 		goto check_again;
 
 		// 这个地方是想用java的那个continue指定for循环的，但是c不支持
@@ -181,27 +183,33 @@ bool security_check(){
 		if ( !Finish[i] ) 
 			return false;
 	}
+	printf("安全序列为：");
+	p = Safety_list;
+	for ( int i = 0 ; i < NP ; i++ ) {
+		printf("%d  ", Safety_list[i]);
+	}
 	return true;
 }
 
-
 void please(int action_process, char *str){
 	// test
-	int *arr;
-	arr = strtoarray(str);
+	int *request;
+	request = strtoarray(str);
 	for ( int j = 0 ; j < NS ; j++ ) {
-		if ( arr[j] > Need[action_process][j] ) {
-			printf("error ! 134");
+		if ( request[j] > Need[action_process][j] ) {
+			printf("error ! 134: 您当前申请的资源超过您的最大所需\n");
+			showdetail();
 			return;
 		}
-		if ( arr[j] > Available[j] ) {
-			printf("error ! 135");
+		if ( request[j] > Available[j] ) {
+			printf("error ! 135: 您当前申请的资源超过当前可分配资源\n");
+			showdetail();
 			return;
 		}
 		// 假意分配
-		Available[j] = Available[j] - arr[j];
-		Allocation[action_process][j] += arr[j];
-		Need[action_process][j] = Need[action_process][j] - arr[j];
+		Available[j] = Available[j] - request[j];
+		Allocation[action_process][j] += request[j];
+		Need[action_process][j] = Need[action_process][j] - request[j];
 	}
 	if ( security_check() ) {
 		printf("资源申请成功！！！");
@@ -210,10 +218,11 @@ void please(int action_process, char *str){
 	else {
 		printf("资源申请失败！！！");
 		for ( int j = 0 ; j < NS ; j++ ) {
-			Available[j] += arr[j];
-			Allocation[action_process][j] -= arr[j];
-			Need[action_process][j] += arr[j];
+			Available[j] += request[j];
+			Allocation[action_process][j] -= request[j];
+			Need[action_process][j] += request[j];
 		}
+		showdetail();
 	}
 }
 
@@ -233,6 +242,7 @@ int main(){
 			scanf("%s", str);
 			please(action_process, str);
 		}
+		printf("请输入申请的进程号：");
 		scanf("%d",&action_process);
 
 
@@ -259,6 +269,9 @@ int main(){
 */
 /* 究极偷懒秘诀：
 3 3 2 7 5 3 3 2 2 9 0 2 2 2 2 4 3 3 0 1 0 2 0 0 3 0 2 2 1 1 0 0 2 7 4 3 1 2 2 6 0 0 0 1 1 4 3 1
+1 1,0,2
+4 3,3,0
+0 0,2,0
 */
 
 
