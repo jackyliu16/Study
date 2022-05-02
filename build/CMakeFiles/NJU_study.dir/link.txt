@@ -1,1 +1,0 @@
-/usr/bin/clang -g CMakeFiles/NJU_study.dir/OSTEP/simple_lock.c.o -o NJU_study 
