@@ -213,7 +213,7 @@ void please(int action_process, char *str){
 	}
 	if ( security_check() ) {
 		printf("资源申请成功！！！");
-		showdetail();
+		// showdetail();
 	}
 	else {
 		printf("资源申请失败！！！");
