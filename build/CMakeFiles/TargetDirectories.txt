@@ -1,0 +1,3 @@
+/home/jackyliu/Coding/NJU_study/build/CMakeFiles/NJU_study.dir
+/home/jackyliu/Coding/NJU_study/build/CMakeFiles/edit_cache.dir
+/home/jackyliu/Coding/NJU_study/build/CMakeFiles/rebuild_cache.dir

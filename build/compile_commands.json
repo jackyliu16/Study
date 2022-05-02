@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/jackyliu/Coding/NJU_study/build",
+  "command": "/usr/bin/clang  -I/home/jackyliu/Coding/NJU_study/. -I/home/jackyliu/Coding/NJU_study/CLASS2 -I/home/jackyliu/Coding/NJU_study/OSTEP -g -std=gnu11 -o CMakeFiles/NJU_study.dir/OSTEP/simple_lock.c.o -c /home/jackyliu/Coding/NJU_study/OSTEP/simple_lock.c",
+  "file": "/home/jackyliu/Coding/NJU_study/OSTEP/simple_lock.c"
+}
+]
