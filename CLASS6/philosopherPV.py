@@ -17,20 +17,12 @@ class Philosophers:
         pid = 0
         
         while not self.tryacquire(): pass # mutex_lock
-
-        while not self.try_get_chopsticks(pid):
-            _, _ = self.release(), self.waits.append(pid)
-            while pid in self.waits: pass
-            while not self.tryacquire(): pass
-        
         self.chopsticks[(pid-1+self.num)%self.num], self.chopsticks[pid], cs = self.chopsticks[(pid-1+self.num)%self.num] + 1, self.chopsticks[pid] + 1, True
         self.release()
 
         while not self.tryacquire(): pass
         self.chopsticks[(pid-1+self.num)%self.num], self.chopsticks[pid], cs = self.chopsticks[(pid-1+self.num)%self.num] - 1, self.chopsticks[pid] - 1, True
         del cs
-        if (pid-1+self.num)%self.num in self.waits: self.waits.remove((pid-1+self.num)%self.num)
-        if (pid+1)%self.num in self.waits: self.waits.remove((pid+1)%self.num)
         self.release()  # mutex_unlock
 
     @thread
@@ -38,41 +30,25 @@ class Philosophers:
         pid = 1
         
         while not self.tryacquire(): pass # mutex_lock
-
-        while not self.try_get_chopsticks(pid):
-            _, _ = self.release(), self.waits.append(pid)
-            while pid in self.waits: pass
-            while not self.tryacquire(): pass
-        
         self.chopsticks[(pid-1+self.num)%self.num], self.chopsticks[pid], cs = self.chopsticks[(pid-1+self.num)%self.num] + 1, self.chopsticks[pid] + 1, True
         self.release()
 
         while not self.tryacquire(): pass
         self.chopsticks[(pid-1+self.num)%self.num], self.chopsticks[pid], cs = self.chopsticks[(pid-1+self.num)%self.num] - 1, self.chopsticks[pid] - 1, True
         del cs
-        if (pid-1+self.num)%self.num in self.waits: self.waits.remove((pid-1+self.num)%self.num)
-        if (pid+1)%self.num in self.waits: self.waits.remove((pid+1)%self.num)
         self.release()  # mutex_unlock
 
     @thread
     def people2(self):
         pid = 2
         
-        while not self.tryacquire(): pass # mutex_lock
-
-        while not self.try_get_chopsticks(pid):
-            _, _ = self.release(), self.waits.append(pid)
-            while pid in self.waits: pass
-            while not self.tryacquire(): pass
-        
+        while not self.tryacquire(): pass # mutex_lock    
         self.chopsticks[(pid-1+self.num)%self.num], self.chopsticks[pid], cs = self.chopsticks[(pid-1+self.num)%self.num] + 1, self.chopsticks[pid] + 1, True
         self.release()
 
         while not self.tryacquire(): pass
         self.chopsticks[(pid-1+self.num)%self.num], self.chopsticks[pid], cs = self.chopsticks[(pid-1+self.num)%self.num] - 1, self.chopsticks[pid] - 1, True
         del cs
-        if (pid-1+self.num)%self.num in self.waits: self.waits.remove((pid-1+self.num)%self.num)
-        if (pid+1)%self.num in self.waits: self.waits.remove((pid+1)%self.num)
         self.release()  # mutex_unlock
 
 
@@ -81,3 +57,4 @@ class Philosophers:
         for pid in range(self.num):
             if self.chopsticks[pid] >= 2:
                 return 'red'
+
