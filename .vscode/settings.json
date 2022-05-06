@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "thread-sync.h": "c",
+        "sstream": "c",
+        "pthread.h": "c",
+        "stdbool.h": "c",
+        "thread.h": "c"
+    }
+}
