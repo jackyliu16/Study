@@ -5,6 +5,26 @@
         "functional": "c",
         "tuple": "c",
         "type_traits": "c",
-        "utility": "c"
+        "utility": "c",
+        "atomic": "c",
+        "bit": "c",
+        "*.tcc": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "vector": "c",
+        "algorithm": "c",
+        "memory": "c",
+        "memory_resource": "c",
+        "random": "c",
+        "cmath": "c",
+        "istream": "c",
+        "limits": "c",
+        "numeric": "c",
+        "ostream": "c",
+        "sstream": "c",
+        "stdexcept": "c",
+        "streambuf": "c",
+        "string_view": "c",
+        "typeinfo": "c"
     }
 }

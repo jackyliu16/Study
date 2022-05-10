@@ -1,3 +1,4 @@
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -21,10 +22,11 @@ DLinkedList init(){
     return list;
 }
 
-Node create_item(int number){
-    Node node;
-    node.next = node.prev = NULL;
-    node.size = number;
+Node* create_item(int number){
+    Node *node=(Node *)malloc(sizeof(Node));
+    memset(node, 0, sizeof(Node));
+    node->next = node->prev = NULL;
+    node->size = number;
     return node;
 }
 
@@ -50,9 +52,12 @@ void *add_item(DLinkedList *pList, Node *item) {
 void delete_value(DLinkedList *pList, int value){
     Node *p, *q;
     for ( q=NULL, p=pList->head; p != NULL ; q=p, p=p->next ) {
+        printf("checking %d\n",p->size);
+
         if ( p->size == value ) {
+            printf("finded\n");
             // if find Node
-            if ( p == NULL ) {
+            if ( q == NULL ) {
                 // if delete head node
                 if ( p->next != NULL ) {
                     pList->head = p->next;
@@ -76,9 +81,12 @@ void delete_value(DLinkedList *pList, int value){
                     pList->tail = q;
                 }
                 free(p);
+                goto END_OF_Delete;
             }
         }
     }
+    printf("haven't find node");
+END_OF_Delete:
 }
 
 void print_linked_list(const DLinkedList *pList){
@@ -88,25 +96,41 @@ void print_linked_list(const DLinkedList *pList){
     }
     else {
         for ( p = pList->head; p != NULL; p = p->next ) {
-            printf("%d", p->size);
+            printf("%d\t", p->size);
         }
     }
+    printf("\n");
+}
+
+void delete_all(DLinkedList *pList){
+    Node *p, *q;
+    p = pList->head;
+    while ( p != NULL ) {
+        q = p->next;
+        free(p);
+        p = q;
+    }
+    pList->head = NULL;
+    pList->tail = NULL;
+    printf("completed delete\n");
 }
 
 int main(void) {
     DLinkedList list = init();
     int number;
-    Node tmp;
+    Node *tmp;
     scanf("%d", &number);
     do {
         if ( number != -1 ) {
             tmp = create_item(number);
-            add_item(&list, &tmp);
-            printf("%d", number);
+            add_item(&list, tmp);
             scanf("%d", &number);
         }
     } while ( number != -1 );
 
     print_linked_list(&list);
+    delete_all(&list);
+    print_linked_list(&list);
+
 
 }
