@@ -33,6 +33,8 @@ MemoryBlock* init(){
 // split a node into two pieces
 void split_node(MemoryBlock *pList, Node *split_node, int want_value, Node *result_fragment){
     result_fragment = (Node *)malloc(sizeof(Node));
+    result_fragment->hasBeenUsed  = false;
+
     // memset(&result_fragment, 0, sizeof(Node));
    
    if ( split_node-> size < want_value ) {
@@ -81,16 +83,37 @@ void print_memory_allocation( MemoryBlock *pBlock) {
 void ask_for_memory(MemoryBlock *block, int value) {
     // from head to tail find a space which contails areas >= need and hasn't been used yet
     Node *p = block->head, *q;
-    // printf("size of %d", p->size);
+    // delete the node and try to split it into two parts
+    // one parts is matching the need, and others parts are (total - value)
     while ( p != NULL ) {
         if ( p->size >= value ) {
             split_node(block, p, value, q);
+            p->hasBeenUsed = true;
             break;
         }
         p=p->next;
     }
-    // delete the node and try to split it into two parts
-    // one parts is matching the need, and others parts are (total - value)
+}
+
+void release_memory(MemoryBlock *block, Node *release ) {
+    release->hasBeenUsed = false;
+
+    Node *p, *q, *s;
+    // if prev is unused
+    if ( release->next && ! release->next->hasBeenUsed ) {
+        release->size += release->next->size;
+        if ( release->next->next ) {
+            release->next = release->next->next;
+            release->next->prev = release;
+        }
+        else {
+            release->next = NULL;
+            block->tail = release;
+        }
+        free(release->next);
+    }
+
+    // if next is unused
 }
 
 int main(){
