@@ -34,10 +34,10 @@ MemoryBlock* init(){
 void split_node(MemoryBlock *pList, Node *split_node, int want_value, Node *result_fragment){
     result_fragment = (Node *)malloc(sizeof(Node));
     result_fragment->hasBeenUsed  = false;
-
+ 
     // memset(&result_fragment, 0, sizeof(Node));
    
-   if ( split_node-> size < want_value ) {
+    if ( split_node-> size < want_value ) {
         printf("haven't enough space for fragment");
         return;
     }
@@ -114,6 +114,18 @@ void release_memory(MemoryBlock *block, Node *release ) {
     }
 
     // if next is unused
+    if ( release->prev && !release->prev->hasBeenUsed ) {
+        release->size += release->next->size;
+
+        if ( release->prev->prev ) {
+            release->prev = release->prev->prev;
+            release->prev->next = release;
+        }
+        else {
+            release->prev = NULL;
+            block->head = release;
+        }
+    }
 }
 
 int main(){
@@ -121,6 +133,7 @@ int main(){
     ask_for_memory(block, 20);
     ask_for_memory(block, 5);
     ask_for_memory(block, 30);
+    release_memory(block, block->head);
     
     print_memory_allocation(block);
 }
