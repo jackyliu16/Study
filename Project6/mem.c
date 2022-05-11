@@ -132,8 +132,12 @@ int main(){
     MemoryBlock *block = init();
     ask_for_memory(block, 20);
     ask_for_memory(block, 5);
-    ask_for_memory(block, 30);
-    release_memory(block, block->head);
-    
+    ask_for_memory(block, 23);
+
     print_memory_allocation(block);
+
+    release_memory(block, block->head);
+
+    print_memory_allocation(block);
+
 }
