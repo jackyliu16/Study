@@ -19,10 +19,18 @@ typedef struct _memory_block {
 
 MemoryBlock* init(){
     MemoryBlock *block = malloc(sizeof(MemoryBlock));
+    Node *node = (Node *)malloc(sizeof(Node));
+    if ( block == NULL ) {
+        printf("error[3]: Failed to allocate memory");
+        return NULL;
+    }
+    if ( node == NULL ) {
+        printf("error[3]: Failed to allocate memory");
+        return NULL;
+    }
     // memset(&block, 0, sizeof(MemoryBlock));
 
-    Node *node = (Node *)malloc(sizeof(Node));
-    node->size = 64;
+    node->size = 64*KB;
     node->next = node->prev = NULL;
 
     block->head = node;
@@ -45,15 +53,17 @@ int length_account(MemoryBlock *block);
 
 int main(int *argc, char **argv){
     MemoryBlock *block = init();
-    ask_for_memory(block, 20);
-    ask_for_memory(block, 5);
-    ask_for_memory(block, 23);
-
+    ask_for_memory(block, 20*KB);
+    ask_for_memory(block, 10*KB);
+    ask_for_memory(block, 15*KB);
+    // ask_for_memory(block, 20*KB);
+    ask_for_memory(block, 10*KB);
     print_memory_allocation(block);
-
-    // release_memory(block, block->head);
-    ask_for_release(block, 0);
-
+    ask_for_release(block, 1);
+    print_memory_allocation(block);
+    ask_for_release(block, 2);
+    print_memory_allocation(block);
+    ask_for_release(block, 1);
     print_memory_allocation(block);
 }
 
@@ -107,7 +117,7 @@ void release_memory(MemoryBlock *block, Node *release ) {
             release->prev = NULL;
             block->head = release;
         }
-        free(release);
+        free(p);
     }
 }
 
@@ -146,18 +156,22 @@ void ask_for_memory(MemoryBlock *block, int value) {
     // delete the node and try to split it into two parts
     // one parts is matching the need, and others parts are (total - value)
     while ( p != NULL ) {
-        if ( p->size >= value ) {
+        if ( !p->hasBeenUsed && p->size >= value ) {
             split_node(block, p, value, q);
             p->hasBeenUsed = true;
-            break;
+            return ;
         }
         p=p->next;
     }
+    printf("error[4]: haven't enought space for allocate {memory:%d}\n", value);
 }
 
 // split a node into two pieces
 void split_node(MemoryBlock *pList, Node *split_node, int want_value, Node *result_fragment) {
     result_fragment = (Node *)malloc(sizeof(Node));
+    if ( result_fragment == NULL ) {
+        printf("error[3]: Failed to allocate memory for result_fragment\n");
+    }
     result_fragment->hasBeenUsed  = false;
  
     // memset(&result_fragment, 0, sizeof(Node));
@@ -188,5 +202,4 @@ void split_node(MemoryBlock *pList, Node *split_node, int want_value, Node *resu
     // if ( split_node->prev != NULL ) {
         
     // }
-    printf("end");
 }
