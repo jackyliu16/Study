@@ -36,7 +36,7 @@ void eating(int pid){
 
 void init(){
     for ( int i =0 ; i < N ; i++ ) {
-        SEM_INIT(&chopsticks[i], 1);
+        // SEM_INIT(&chopsticks[i], 1);
 		avail[i] = true;
     }
 }
