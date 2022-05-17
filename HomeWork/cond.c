@@ -24,7 +24,7 @@ void eating(int pid){
         mutex_lock(&locked);
         // if not match then sleep until condition is met
         while (!avail[lch] || !avail[rch]) {
-            wait(&cond, &locked);
+            cond_wait(&cond, &locked);
         }
         avail[lch] = avail[lch] = false;
         mutex_unlock(&locked);
@@ -42,7 +42,7 @@ void eating(int pid){
         sleep(2);
         count_of_complete++;
     }
-    printf("==========%d==========",pid);
+    printf("==========%d==========\n",pid);
 }
 
 
