@@ -1,9 +1,9 @@
 """
-@Target : 
-@Annotation : 
+@Target :
+@Annotation :
 @Author : JackyLiu
 @Date   : 2022/6/2 10:02
-@Reference  : 
+@Reference  :
 # 窗口实现相关
     https://blog.csdn.net/Jason_WangYing/article/details/108916236
     https://blog.csdn.net/weixin_40450867/article/details/81431718
@@ -12,7 +12,7 @@
     https://blog.csdn.net/qq_33521184/article/details/89391354
     https://blog.csdn.net/qq_42063091/article/details/82423221
 @Source :
-    
+
 """
 import tkinter
 import tkinter as tk
@@ -51,8 +51,8 @@ entry_end_station = tk.Entry(window, textvariable=var_end_station)
 entry_end_station.place(x=150, y=190)
 
 
-
 def count():
+    # TODO 完成差错控制，因为这个getedge会报错
     tk.messagebox.showinfo(title="计算结果",
                            message=f"{context.using_strategy(var_start_station.get(), var_end_station.get())}")
 
@@ -88,7 +88,7 @@ def change_model():
     bt_shortest_path = tk.Button(change_model_window, text="最短距离模式", command=change_to_shortest_path)
     bt_shortest_path.place(x=50, y=20)
     bt_minimise_sites = tk.Button(change_model_window, text="最少站点模式", command=change_to_minimum_sites)
-    bt_minimise_sites.place(x=50, y = 50)
+    bt_minimise_sites.place(x=50, y=50)
     bt_minimum_transfer = tk.Button(change_model_window, text="最少换乘模式", command=change_to_minimum_transfer)
     bt_minimum_transfer.place(x=50, y=90)
 
