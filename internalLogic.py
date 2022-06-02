@@ -1,6 +1,6 @@
 """
-@Target : 
-@Annotation : 
+@Target :
+@Annotation :
 @Author : JackyLiu
 @Date   : 2022/5/31 10:49
 @Reference  :
@@ -11,7 +11,7 @@
     https://mailscusteducn-my.sharepoint.com/:f:/g/personal/2015002346_mails_cust_edu_cn/EjmW-PrnghhMhowOLVNr9iEBUTS0Po9K6sCaf5DXs2M3kg?e=FWRfF4
         password: scnu group: B
 @Source :
-    
+
 """
 import abc
 import json
@@ -118,7 +118,6 @@ class Method:
     def get_path(cls, start_station:str, end_station:str ) -> str:
         pass
 
-    @classmethod
     def _floyd(self):
         """
         实现 floyd 算法
@@ -148,6 +147,17 @@ class Method:
 
         return dist_matrix, path_matrix
 
+    def belong_to_which_line(self, station_num: int) -> List[int]:
+        """
+        get a station number and return a array which show which line the stations belongs to
+        :param station_num:
+        :return:
+        """
+        belong_to = []
+        for line_num in self.station_line:
+            if station_num in self.station_line[line_num]:
+                belong_to.append(line_num)
+        return belong_to
 
 class ShortestPath(Method):
     """
@@ -176,7 +186,7 @@ class ShortestPath(Method):
         apath.reverse()
 
         # TODO 可以仅显示换乘站信息，但是这个需要支持
-        return f"你可以通过{apath}到达目标点，距离为:{cls.dist_matrix[start_station][end_station]}KM"
+        return "你可以通过{}到达目标点，距离为:{:.2f}KM".format(apath, cls.dist_matrix[start_station][end_station])
 
 
 class MinimumSites(Method):
@@ -186,7 +196,7 @@ class MinimumSites(Method):
     def __init__(self, city_num: int):
         self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_name = get_edge(
             city_num)
-        self.edge = [[1 if i != j else 0 for i in range(self.sat_num)] for j in range(self.sat_num)]
+        self.edge = [[1 if self.edge[i][j] != INF else INF for i in range(self.sat_num)] for j in range(self.sat_num)]
         self.dist_matrix, self.path_matrix = self._floyd()
 
     def get_path(cls, start_station:str, end_station:str ) -> str:
@@ -201,8 +211,17 @@ class MinimumSites(Method):
         apath.append(cls.station_name[start_station])
         apath.reverse()
 
+        # TODO 这个地方的换乘检测算法没有考量到前后线路一致的情况
+        # transfer_stops = []
+        # for station_name in apath:
+        #     # if this stations belong to two lines
+        #     if len(cls.belong_to_which_line(cls.station_con_name[station_name])) > 1 :
+        #         transfer_stops.append(station_name)
+
         # TODO 可以仅显示换乘站信息，但是这个需要支持
         return f"你可以通过{apath}到达目标点，通过的站点数目为:{cls.dist_matrix[start_station][end_station]}"
+        # return "你可以通过{}到达目标点，{}通过的站点数目为:{}"\
+        #     .format(apath,"不需要换乘" if len(transfer_stops) == 0 else "在" + str(transfer_stops) + "处进行换乘", cls.dist_matrix[start_station][end_station])
 
 
 class MinimumTransfer(Method):
@@ -212,8 +231,18 @@ class MinimumTransfer(Method):
     def __init__(self, city_num: int):
         self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_name = get_edge(
             city_num)
+        self.edge = [[INF for _ in range(self.sat_num)] for _ in range(self.sat_num)]       # setting as INF
         self.sat_num = len(self.line_name)
-        self.edge = [[1 if i != j else 0 for i in range(self.sat_num)] for j in range(self.sat_num)]
+        # TODO finish edge create
+        # TODO get which stations is interchange stations
+        # TODO 存在两个线路之间多个相交点的情况，因此在选择具体换乘站点的时候需要进行额外考量
+
+        # 这个地方更倾向于采用通过(如果两条线路之间存在换乘站点，则这两条线路之间的距离为1) 的方案，但是在做结果输出的时候，存在一定的问题
+        # TODO 结果输出中换成站点的显示方法
+
+
+        # TODO making connection between two stations
+        # self.edge = [[ for i in range(self.sat_num)] for j in range(self.sat_num)]
         self.dist_matrix, self.path_matrix = self._floyd()
 
 
