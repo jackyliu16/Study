@@ -25,8 +25,8 @@ INF = 0x3f3f3f3f
 
 def get_edge(city):
     """
-    :param city: 城市编号
-    :return: 城市序号，返回邻接表、总站数、站名-序号查询字典、序号反查字典、站点序号-线路字典、线路-序号反查字典
+    :param city: the number of city
+    :return: 城市序号，返回邻接表、总站数、站名-序号查询字典、序号反查字典、站点序号-所属线路字典，线路：站点序号字典，线路-序号反查字典
     此模块由摘自黄诺然(20202031017), 蒋一帆(20202031069)在21-秋(数据结构与算法-python大作业中)
     在对他们的代码的分析中，发现其内容基本吻合我的要求，并且封装的较为良好，因此选择直接使用他们的模块，而非重新写一个模块
     """
@@ -83,6 +83,19 @@ def get_edge(city):
         linecondict[linecon] = i
         linecon += 1
 
+    # ====== 两条线之间是我添加的部分 ======
+
+    station_line = {}  # 注意：这个地方我并没有更正源代码中错误的stationline(个人认为应该为{line_station}描述，仅仅只是使用自己的写法添加了东西
+
+    for line_num in stationline:
+        for station_num in stationline[line_num]:
+            if station_num in station_line.keys():
+                station_line[station_num].append(line_num)
+            else:
+                station_line[station_num] = [line_num]
+
+    # ====== 两条线之间是我添加的部分 ======
+
     edge = [[INF] * con for i in range(con)]  # 以下部分生成站点间的邻接表、其中距离为权值
     for l in range(con):
         edge[l][l] = 0
@@ -100,22 +113,23 @@ def get_edge(city):
             edge[staname[i]][staname[i + 1]] = distance
             edge[staname[i + 1]][staname[i]] = distance
 
-    return edge, con, stationame, statiouname, stationline, linecondict
+    return edge, con, stationame, statiouname, station_line, stationline, linecondict
 
 
 class Method:
     @abc.abstractmethod
     def __init__(self, city_num: int):
         # self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_con_dict = get_edge(city_num)
-        self.edge: List[List[int]]                  # 邻接矩阵
-        self.sat_num: int                           # 总站点数目
-        self.station_name: Dict[int, Any]           # 站点编号：名称字典
-        self.station_con_name: Dict[Any, int]       # 站点名称：编号字典
-        self.station_line: Dict[int, List]          # 线路编号：线路字典
-        self.line_name: Dict[int, Any]              # 线路：线路编号字典
+        self.edge: List[List[int]]  # 邻接矩阵
+        self.sat_num: int  # 总站点数目
+        self.station_name: Dict[int, Any]  # 站点编号：名称字典
+        self.station_con_name: Dict[Any, int]  # 站点名称：编号字典
+        self.station_line: Dict[int, List[int]]  # 站点编号：站点所属的线路
+        self.line_station: Dict[int, List]  # 线路编号：线路字典
+        self.line_name: Dict[int, Any]  # 线路：线路编号字典
 
     @abc.abstractmethod
-    def get_path(cls, start_station:str, end_station:str ) -> str:
+    def get_path(cls, start_station: str, end_station: str) -> str:
         pass
 
     def _floyd(self):
@@ -147,27 +161,34 @@ class Method:
 
         return dist_matrix, path_matrix
 
-    def belong_to_which_line(self, station_num: int) -> List[int]:
-        """
-        get a station number and return a array which show which line the stations belongs to
-        :param station_num:
-        :return:
-        """
-        belong_to = []
-        for line_num in self.station_line:
-            if station_num in self.station_line[line_num]:
-                belong_to.append(line_num)
-        return belong_to
+    def find_where_we_need_to_transfer(self, apath:List[str])->List[str]:
+        transfer_station = []
+        for i in range(len(apath)):
+            station_num = self.station_con_name[apath[i]]
+            if len(self.station_line[station_num]) > 1:
+                # is transfer station
+                if i - 1 >= 0 and i + 1 < len(apath):
+                    # check if a, b, c is in same line
+                    # TODO 连续换乘多站会出现bug
+                    if self.station_line[self.station_con_name[apath[i-1]]] == self.station_line[self.station_con_name[apath[i+1]]]:
+                        # you will not change your line in this transfer station
+                        pass
+                    else:
+                        transfer_station.append(apath[i])
+                else:
+                    # is start station or end station
+                    pass
+        return transfer_station
 
 class ShortestPath(Method):
     """
     最短距离模块
     """
     def __init__(self, city_num: int):
-        self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_name = get_edge(city_num)
+        self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_station, self.line_name = get_edge(city_num)
         self.dist_matrix, self.path_matrix = self._floyd()
 
-    def get_path(cls, start_station:str, end_station:str ) -> str:
+    def get_path(cls, start_station: str, end_station: str) -> str:
         """
         实现结果（最小路径 /站数)以及路径的呈现
         :param start_station:   the name of start station in self.vertx
@@ -185,21 +206,22 @@ class ShortestPath(Method):
         apath.append(cls.station_name[start_station])
         apath.reverse()
 
-        # TODO 可以仅显示换乘站信息，但是这个需要支持
-        return "你可以通过{}到达目标点，距离为:{:.2f}KM".format(apath, cls.dist_matrix[start_station][end_station])
+        transfer = cls.find_where_we_need_to_transfer(apath)
+        return "你可以通过{}到达目标点, {}，距离为:{:.2f}KM".format(apath, "不需要换乘" if len(transfer) == 0 else "你需要在以下站点换乘" + str(transfer), cls.dist_matrix[start_station][end_station])
 
 
 class MinimumSites(Method):
     """
     最小站点数目模块
     """
+
     def __init__(self, city_num: int):
-        self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_name = get_edge(
-            city_num)
+        self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_station, self.line_name = get_edge(city_num)
+
         self.edge = [[1 if self.edge[i][j] != INF else INF for i in range(self.sat_num)] for j in range(self.sat_num)]
         self.dist_matrix, self.path_matrix = self._floyd()
 
-    def get_path(cls, start_station:str, end_station:str ) -> str:
+    def get_path(cls, start_station: str, end_station: str) -> str:
         start_station, end_station = cls.station_con_name[start_station], cls.station_con_name[end_station]
 
         k = cls.path_matrix[start_station][end_station]
@@ -211,27 +233,19 @@ class MinimumSites(Method):
         apath.append(cls.station_name[start_station])
         apath.reverse()
 
-        # TODO 这个地方的换乘检测算法没有考量到前后线路一致的情况
-        # transfer_stops = []
-        # for station_name in apath:
-        #     # if this stations belong to two lines
-        #     if len(cls.belong_to_which_line(cls.station_con_name[station_name])) > 1 :
-        #         transfer_stops.append(station_name)
-
-        # TODO 可以仅显示换乘站信息，但是这个需要支持
-        return f"你可以通过{apath}到达目标点，通过的站点数目为:{cls.dist_matrix[start_station][end_station]}"
-        # return "你可以通过{}到达目标点，{}通过的站点数目为:{}"\
-        #     .format(apath,"不需要换乘" if len(transfer_stops) == 0 else "在" + str(transfer_stops) + "处进行换乘", cls.dist_matrix[start_station][end_station])
-
+        transfer = cls.find_where_we_need_to_transfer(apath)
+        return "你可以通过{}到达目标点，通过的站点数目为:{}".format(apath, "不需要换乘" if len(transfer) == 0 else "你需要在以下站点换乘" + str(transfer), cls.dist_matrix[start_station][end_station])
+    
 
 class MinimumTransfer(Method):
     """
     最小换乘计算类
     """
+
     def __init__(self, city_num: int):
-        self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_name = get_edge(
-            city_num)
-        self.edge = [[INF for _ in range(self.sat_num)] for _ in range(self.sat_num)]       # setting as INF
+        self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_station, self.line_name = get_edge(city_num)
+
+        self.edge = [[INF for _ in range(self.sat_num)] for _ in range(self.sat_num)]  # setting as INF
         self.sat_num = len(self.line_name)
         # TODO finish edge create
         # TODO get which stations is interchange stations
@@ -240,23 +254,21 @@ class MinimumTransfer(Method):
         # 这个地方更倾向于采用通过(如果两条线路之间存在换乘站点，则这两条线路之间的距离为1) 的方案，但是在做结果输出的时候，存在一定的问题
         # TODO 结果输出中换成站点的显示方法
 
-
         # TODO making connection between two stations
         # self.edge = [[ for i in range(self.sat_num)] for j in range(self.sat_num)]
         self.dist_matrix, self.path_matrix = self._floyd()
 
-
-    def get_path(cls, start_station:str, end_station:str ) -> str:
+    def get_path(cls, start_station: str, end_station: str) -> str:
         # TODO Finish get_path
         pass
 
 
 class Context:
     def __init__(self, strategy=ShortestPath):
-        self.strategy: Method=strategy(-1)          # 默认使用GuangZhou
+        self.strategy: Method = strategy(-1)  # 默认使用GuangZhou
         # eval(f"self.strategy= new {strategy}()")
 
-    def using_strategy(self, start_station:str, end_station: str)->str:
+    def using_strategy(self, start_station: str, end_station: str) -> str:
         return self.strategy.get_path(start_station, end_station)
 
     def change_model(self, model=ShortestPath):
