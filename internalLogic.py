@@ -3,9 +3,13 @@
 @Annotation : 
 @Author : JackyLiu
 @Date   : 2022/5/31 10:49
-@Reference  : 
-    1.
-    2.
+@Reference  :
+    https://github.com/jackyliu16/Study.git     # 我自己的仓库中的Shortest啥的分支【这个是镜像仓库，原仓库在gitee上，但是没法开源】
+    https://zhuanlan.zhihu.com/p/106271601
+    https://blog.csdn.net/qq_42467563/article/details/86182266
+    PPT-第七章图的最小路径
+    https://mailscusteducn-my.sharepoint.com/:f:/g/personal/2015002346_mails_cust_edu_cn/EjmW-PrnghhMhowOLVNr9iEBUTS0Po9K6sCaf5DXs2M3kg?e=FWRfF4
+        password: scnu group: B
 @Source :
     
 """
@@ -108,10 +112,10 @@ class Method:
         self.station_name: Dict[int, Any]           # 站点编号：名称字典
         self.station_con_name: Dict[Any, int]       # 站点名称：编号字典
         self.station_line: Dict[int, List]          # 线路编号：线路字典
-        self.line_con_dict: Dict[int, Any]          # 线路：线路编号字典
+        self.line_name: Dict[int, Any]              # 线路：线路编号字典
 
     @abc.abstractmethod
-    def get_path(cls):
+    def get_path(cls, start_station:str, end_station:str ) -> str:
         pass
 
     @classmethod
@@ -150,10 +154,29 @@ class ShortestPath(Method):
     最短距离模块
     """
     def __init__(self, city_num: int):
-        pass
+        self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_name = get_edge(city_num)
+        self.dist_matrix, self.path_matrix = self._floyd()
 
-    def get_path(cls):
-        return "hello"
+    def get_path(cls, start_station:str, end_station:str ) -> str:
+        """
+        实现结果（最小路径 /站数)以及路径的呈现
+        :param start_station:   the name of start station in self.vertx
+        :param end_station:     the name of end station in self.vertx
+        :return:
+        """
+        # from station name get index of station
+        start_station, end_station = cls.station_con_name[start_station], cls.station_con_name[end_station]
+        k = cls.path_matrix[start_station][end_station]
+        apath = [cls.station_name[end_station]]
+
+        while k != -1 and k != start_station:
+            apath.append(cls.station_name[k])
+            k = cls.path_matrix[start_station][k]
+        apath.append(cls.station_name[start_station])
+        apath.reverse()
+
+        # TODO 可以仅显示换乘站信息，但是这个需要支持
+        return f"你可以通过{apath}到达目标点，距离为:{cls.dist_matrix[start_station][end_station]}KM"
 
 
 class MinimumSites(Method):
@@ -161,10 +184,25 @@ class MinimumSites(Method):
     最小站点数目模块
     """
     def __init__(self, city_num: int):
-        pass
+        self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_name = get_edge(
+            city_num)
+        self.edge = [[1 if i != j else 0 for i in range(self.sat_num)] for j in range(self.sat_num)]
+        self.dist_matrix, self.path_matrix = self._floyd()
 
-    def get_path(cls):
-        pass
+    def get_path(cls, start_station:str, end_station:str ) -> str:
+        start_station, end_station = cls.station_con_name[start_station], cls.station_con_name[end_station]
+
+        k = cls.path_matrix[start_station][end_station]
+        apath = [cls.station_name[end_station]]
+
+        while k != -1 and k != start_station:
+            apath.append(cls.station_name[k])
+            k = cls.path_matrix[start_station][k]
+        apath.append(cls.station_name[start_station])
+        apath.reverse()
+
+        # TODO 可以仅显示换乘站信息，但是这个需要支持
+        return f"你可以通过{apath}到达目标点，通过的站点数目为:{cls.dist_matrix[start_station][end_station]}"
 
 
 class MinimumTransfer(Method):
@@ -172,17 +210,29 @@ class MinimumTransfer(Method):
     最小换乘计算类
     """
     def __init__(self, city_num: int):
-        pass
+        self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_name = get_edge(
+            city_num)
+        self.sat_num = len(self.line_name)
+        self.edge = [[1 if i != j else 0 for i in range(self.sat_num)] for j in range(self.sat_num)]
+        self.dist_matrix, self.path_matrix = self._floyd()
 
-    def get_path(cls):
+
+    def get_path(cls, start_station:str, end_station:str ) -> str:
+        # TODO Finish get_path
         pass
 
 
 class Context:
     def __init__(self, strategy=ShortestPath):
-        self.strategy: Method=strategy(1)
+        self.strategy: Method=strategy(-1)          # 默认使用GuangZhou
         # eval(f"self.strategy= new {strategy}()")
 
-    def using_strategy(self):
-        # TODO return model method of finding path
-        return self.strategy.get_path()
+    def using_strategy(self, start_station:str, end_station: str)->str:
+        return self.strategy.get_path(start_station, end_station)
+
+    def change_model(self, model=ShortestPath):
+        self.strategy = model
+
+    def get_model_name(self):
+        return "最短距离模式" if isinstance(self.strategy, ShortestPath) else "最少站点模式" \
+            if isinstance(self.strategy, MinimumSites) else "最少换乘模式"
