@@ -207,7 +207,7 @@ class ShortestPath(Method):
         apath.reverse()
 
         transfer = cls.find_where_we_need_to_transfer(apath)
-        return "你可以通过{}到达目标点, {}，距离为:{:.2f}KM".format(apath, "不需要换乘" if len(transfer) == 0 else "你需要在以下站点换乘" + str(transfer), cls.dist_matrix[start_station][end_station])
+        return "你可以通过{}到达目标点, {},距离为:{:.2f}KM".format(apath, "不需要换乘" if len(transfer) == 0 else "你需要在以下站点换乘" + str(transfer), cls.dist_matrix[start_station][end_station])
 
 
 class MinimumSites(Method):
@@ -234,8 +234,8 @@ class MinimumSites(Method):
         apath.reverse()
 
         transfer = cls.find_where_we_need_to_transfer(apath)
-        return "你可以通过{}到达目标点，通过的站点数目为:{}".format(apath, "不需要换乘" if len(transfer) == 0 else "你需要在以下站点换乘" + str(transfer), cls.dist_matrix[start_station][end_station])
-    
+        return "你可以通过{}到达目标点,{},通过的站点数目为:{}".format(apath, "不需要换乘" if len(transfer) == 0 else "你需要在以下站点换乘" + str(transfer), cls.dist_matrix[start_station][end_station])
+
 
 class MinimumTransfer(Method):
     """
@@ -265,14 +265,17 @@ class MinimumTransfer(Method):
 
 class Context:
     def __init__(self, strategy=ShortestPath):
-        self.strategy: Method = strategy(-1)  # 默认使用GuangZhou
+        city_num = -1
+        self.warehouse = [ShortestPath(city_num), MinimumSites(city_num), MinimumTransfer(city_num) ]
+        self.strategy = self.warehouse[0]
+        # self.strategy: Method = strategy(-1)  # 默认使用GuangZhou
         # eval(f"self.strategy= new {strategy}()")
 
     def using_strategy(self, start_station: str, end_station: str) -> str:
         return self.strategy.get_path(start_station, end_station)
 
-    def change_model(self, model=ShortestPath):
-        self.strategy = model
+    def change_model(self, model: int=0):
+        self.strategy = self.warehouse[model]
 
     def get_model_name(self):
         return "最短距离模式" if isinstance(self.strategy, ShortestPath) else "最少站点模式" \

@@ -62,21 +62,24 @@ def change_model():
 
     def change_to_shortest_path():
         nonlocal change_model_window
-        context.change_model(internalLogic.ShortestPath(city_num))
+        # context.change_model(internalLogic.ShortestPath(city_num))
+        context.change_model(0)
         global model_information
         model_information['text'] = f"您正在使用{context.get_model_name()}于{city_name}城市"
         change_model_window.destroy()
 
     def change_to_minimum_sites():
         nonlocal change_model_window
-        context.change_model(internalLogic.MinimumSites(city_num))
+        context.change_model(1)
+        # context.change_model(internalLogic.MinimumSites(city_num))
         global model_information
         model_information['text'] = f"您正在使用{context.get_model_name()}于{city_name}城市"
         change_model_window.destroy()
 
     def change_to_minimum_transfer():
         nonlocal change_model_window
-        context.change_model(internalLogic.MinimumTransfer(city_num))
+        context.change_model(2)
+        # context.change_model(internalLogic.MinimumTransfer(city_num))
         global model_information
         model_information['text'] = f"您正在使用{context.get_model_name()}于{city_name}城市"
         change_model_window.destroy()
