@@ -162,6 +162,11 @@ class Method:
         return dist_matrix, path_matrix
 
     def find_where_we_need_to_transfer(self, apath:List[str])->List[str]:
+        """
+        give a apath return if need transfer
+        :param apath:   运行路径
+        :return:        换乘站点
+        """
         transfer_station = []
         for i in range(len(apath)):
             station_num = self.station_con_name[apath[i]]
@@ -179,6 +184,7 @@ class Method:
                     # is start station or end station
                     pass
         return transfer_station
+
 
 class ShortestPath(Method):
     """
@@ -214,7 +220,6 @@ class MinimumSites(Method):
     """
     最小站点数目模块
     """
-
     def __init__(self, city_num: int):
         self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_station, self.line_name = get_edge(city_num)
 
@@ -241,35 +246,93 @@ class MinimumTransfer(Method):
     """
     最小换乘计算类
     """
-
     def __init__(self, city_num: int):
         self.edge, self.sat_num, self.station_name, self.station_con_name, self.station_line, self.line_station, self.line_name = get_edge(city_num)
-
-        self.edge = [[INF for _ in range(self.sat_num)] for _ in range(self.sat_num)]  # setting as INF
         self.sat_num = len(self.line_name)
-        # TODO finish edge create
-        # TODO get which stations is interchange stations
-        # TODO 存在两个线路之间多个相交点的情况，因此在选择具体换乘站点的时候需要进行额外考量
+        self.edge = [[INF if i != j else 0 for i in range(self.sat_num)] for j in range(self.sat_num)]  # setting as INF
+        self.transfer_station:List[List[int, int], List[int]] = []  # unhashable type: 'list'
+        # find which line and which line have connection
+        for key, value in self.station_line.items():
+            if len(value) > 1 :
+                for i in range(len(value)):
+                    value[i], value[0] = value[0], value[i]
+                    for j in range(1, len(value)):
+                        if self.edge[value[0]][value[j]] == INF:
+                            self.edge[value[0]][value[j]] = 1
+                        else:
+                            self.edge[value[0]][value[j]] += 1
+                        # add station to line-line -- station_num list
+                        Flag = False
+                        for item in self.transfer_station:
+                            if item[0] == [value[0], value[j]]:
+                                Flag = True
+                                item[1].append(key)
+                                break
+                        # if not found
+                        if not Flag :
+                            self.transfer_station.append([[value[0], value[j]], [key]])
+
+
+        # # For debug
+        # for row in self.edge:
+        #     for col in row:
+        #         print(col if col != INF else "INF" , end="\t")
+        #     print()
 
         # 这个地方更倾向于采用通过(如果两条线路之间存在换乘站点，则这两条线路之间的距离为1) 的方案，但是在做结果输出的时候，存在一定的问题
-        # TODO 结果输出中换成站点的显示方法
 
-        # TODO making connection between two stations
-        # self.edge = [[ for i in range(self.sat_num)] for j in range(self.sat_num)]
         self.dist_matrix, self.path_matrix = self._floyd()
 
     def get_path(cls, start_station: str, end_station: str) -> str:
         # TODO Finish get_path
-        pass
+        start_line, end_line = cls.station_line[cls.station_con_name[start_station]], cls.station_line[cls.station_con_name[end_station]]
+
+        apath = [None for _ in range(cls.sat_num)]
+        end_flag = False
+        for i in range(len(start_line)):
+            for j in range(len(end_line)):
+                tmp_apath = apath
+
+                # if not end_flag:
+                k = cls.path_matrix[start_line[i]][end_line[j]]
+                tmp_apath = [[end_line[j]]]
+
+                while k != -1 and k != start_line:
+                    tmp_apath.append([k])
+                    k = cls.path_matrix[start_line[i]][k]
+                tmp_apath.append([start_line[i]])
+                tmp_apath.reverse()
+
+                # label:
+                if len(tmp_apath) < len(apath):
+                    apath = tmp_apath
+
+        apath = [item[0] for item in apath]
+
+        # remove same line
+        delete_list = []
+        for i in range(0, len(apath)-1):
+            if apath[i] == apath[i+1]:
+                delete_list.append(apath[i]) # 避免删除元素对于后面索引的影响
+        for i in delete_list:
+            apath.remove(i)
+
+
+        transfer_list = []
+        for i in range(len(apath)-1):
+            for item in cls.transfer_station:
+                if [apath[i], apath[i+1]] == item[0]:
+                    transfer_list.append(cls.station_name[item[1][0]])
+                # TODO 这个地方可能存在两个换乘战的情况
+        line = [cls.line_name[apath[i]] for i in range(len(apath))]
+        return f"{'您不需要换乘' if len(transfer_list) == 0 else f'您可以通过{line}的轨迹到达目的地, 其中您需要于{transfer_list}进行换乘'}"
 
 
 class Context:
     def __init__(self, strategy=ShortestPath):
-        city_num = -1
+        city_num = -1                           # 默认使用广州
         self.warehouse = [ShortestPath(city_num), MinimumSites(city_num), MinimumTransfer(city_num) ]
-        self.strategy = self.warehouse[0]
-        # self.strategy: Method = strategy(-1)  # 默认使用GuangZhou
-        # eval(f"self.strategy= new {strategy}()")
+        self.strategy = self.warehouse[0]       # 默认使用最短路径模式
 
     def using_strategy(self, start_station: str, end_station: str) -> str:
         return self.strategy.get_path(start_station, end_station)
