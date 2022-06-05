@@ -24,11 +24,33 @@ import internalLogic
 window = tk.Tk()
 window.title("欢迎进入地铁线路规划系统")
 window.geometry("960x860")
-# put photo
-# canvas = tk.Canvas(window, height=962, width=1098)
-# image_file = tk.PhotoImage(file='Line.png')
-# image = canvas.create_image(0, 0, anchor='nw', image=image_file)
-# canvas.pack(side='top')
+
+
+# 加图片和鼠标点击的
+photo = tk.PhotoImage(file = 'f7finwtg.png')  #原
+cv = tk.Canvas(window, height=801, width=1895,bg='silver')
+image = cv.create_image(0,0,anchor = 'n',image = photo)
+cv.pack()
+
+# 与可拖动图片相关的函数
+def StartMove(event):
+    global first_x,first_y,clickID
+    allID=cv.find_closest(event.x,event.y)  #halo =3容易找到细直线
+    if len(allID) > 0:
+        clickID=allID[0]
+        first_x,first_y = event.x,event.y
+
+def StopMove(event):
+    global first_x,first_y,clickID
+    cv.move(clickID,event.x-first_x,event.y-first_y)
+    clickID=-1
+
+def OnMotion(event):
+    global first_x,first_y,clickID
+    if clickID!=-1:
+        cv.move(clickID,event.x-first_x,event.y-first_y)
+        first_x,first_y = event.x,event.y
+
 
 # initialization
 context = internalLogic.Context()
@@ -107,5 +129,12 @@ bt_change_model.place(x=170, y=230)
 bt_quit_programme = tk.Button(window, text='退出', command=quit_programme)
 bt_quit_programme.place(x=250, y=230)
 
+
+# 实现可拖动图片
+cv.create_rectangle(70,70,300,300,fill='#FFFFFF')
+clickID=-1
+cv.bind("<ButtonPress-1>",StartMove)  #绑定鼠标左键按下事件
+cv.bind("<ButtonRelease-1>",StopMove) #绑定鼠标左键松开事件
+cv.bind("<B1-Motion>", OnMotion)      #绑定鼠标左键被按下时移动鼠标事件
 # Main_Loop
 window.mainloop()
