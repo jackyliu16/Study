@@ -6,9 +6,14 @@
 # Lib
 from matplotlib import pyplot as plt
 import numpy as np
+import cv2
 
 def show_original_image(image: np.ndarray) -> None:
-    plt.imshow(image.astype('int'))
+    if len(image.shape) == 2 :
+        tmp = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+    else:
+        tmp = image
+    plt.imshow(tmp.astype('int'))
     # plt.suptitle('original image')
     plt.show()
 
