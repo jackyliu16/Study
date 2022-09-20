@@ -1,7 +1,8 @@
 """
-@Target : 
-@Annotation : 
+@Target : image processing lab 2
 @Author : JackyLiu
+@Email  : 18922251299@163.com
+@github :
 @Date   : 2022/9/19 16:10
 @Reference  : 
     1. show to using cv2 to operate image: https://blog.csdn.net/qq_40344307/article/details/93578188

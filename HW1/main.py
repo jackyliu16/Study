@@ -1,7 +1,14 @@
 """
-@author: jackyLiu
-@email:  18922251299@163.com
-@Lab Report Address: https://e3vqhv9jh5.feishu.cn/docx/doxcnAr018n4zQPnfXtojLzTcsh
+@Target : image processing lab 2
+@Author : JackyLiu
+@Email  : 18922251299@163.com
+@github :
+@Date   : 2022/9/19
+@Reference  :
+    1. show to using cv2 to operate image: https://blog.csdn.net/qq_40344307/article/details/93578188
+    2.
+@Source :
+
 """
 # Lib
 from matplotlib import pyplot as plt
