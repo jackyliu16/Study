@@ -15,13 +15,14 @@ from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 
-def show_original_image(image: np.ndarray) -> None:
+def show_original_image(image: np.ndarray, title: str="") -> None:
     if len(image.shape) == 2 :
         tmp = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
     else:
         tmp = image
     plt.imshow(tmp.astype('int'))
     # plt.suptitle('original image')
+    plt.title(title)
     plt.show()
 
 def show_gray_image(image: np.ndarray) -> None:
