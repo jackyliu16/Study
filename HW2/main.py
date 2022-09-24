@@ -5,10 +5,10 @@
 @github :
 @Date   : 2022/9/19 16:10
 @Reference  : 
-    1. show to using cv2 to operate image: https://blog.csdn.net/qq_40344307/article/details/93578188
-    2.
+    1. show to using cv2 to operate image:  https://blog.csdn.net/qq_40344307/article/details/93578188
+    2. how to histogram specification :     https://blog.csdn.net/qq_38328871/article/details/85056234
 @Source :
-    
+    https://cn.bing.com/images/
 """
 from math import fabs
 
@@ -75,7 +75,7 @@ def show_cdf_and_histogram(img: np.ndarray, title: str = "") -> None:
 def get_diff_between_two_cdf(img_a: np.ndarray, img_b: np.ndarray) -> list[int]:
     """
     return the different of two cdf_normalized
-    reference: https://blog.csdn.net/qq_40344307/article/details/93578188
+    reference: https://blog.csdn.net/qq_38328871/article/details/85056234
     """
     """ As same as below
     diff_cdf = [[ 0 for i in range(256)] for j in range(256)]
