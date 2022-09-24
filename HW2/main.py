@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # show cdf right now
     img = cv2.imread("OIP-C.jpg", 0)
     print(img.shape)
-    show_cdf(img)
+    show_cdf_and_histogram(img)
 
     # gray = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     show_original_image(img)
@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
     # show cdf after equalizeHist
     equ = cv2.equalizeHist(img)
-    show_cdf(equ)
+    show_cdf_and_histogram(equ)
     show_original_image(equ)
 
     # using cv2.equalizeHist to equalization
