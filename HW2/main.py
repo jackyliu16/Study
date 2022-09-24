@@ -48,13 +48,13 @@ def constant(num: int, constant: int) -> int:
 # i was boring implement the traditional ways to implement the function, thus using cv2
 import cv2
 
-def show_cdf(img: np.ndarray) -> None:
+def show_cdf_and_histogram(img: np.ndarray) -> None:
     hist, bins = np.histogram(img.flatten(), 256, [0, 256])
     # Calculate the cumulative distribution map
     cdf = hist.cumsum()
     cdf_normalized = cdf * hist.max() / cdf.max()
-    plt.plot(cdf_normalized, color='b')
-    plt.hist(img.flatten(), 256, [0, 256], color='r')
+    plt.plot(cdf_normalized, color='r')
+    plt.hist(img.flatten(), 256, [0, 256], color='b')
     plt.xlim([0, 256])
     plt.legend(('cdf', 'histogram'), loc='upper left')
     plt.show()
@@ -95,6 +95,7 @@ if __name__ == "__main__":
     img = cv2.imread("OIP-C.jpg", 0)
     print(img.shape)
     show_cdf(img)
+
     # gray = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     show_original_image(img)
     # cv2.imshow('img', img)
@@ -104,10 +105,15 @@ if __name__ == "__main__":
     show_cdf(equ)
     show_original_image(equ)
 
-
-
     # using cv2.equalizeHist to equalization
 
 
+# Recode of different ways
+"""
+图像灰度直方图的呈现
+hist_full = cv2.calcHist([img], [0], None, [256], [0, 256])
+plt.plot(hist_full)
+plt.show()
+"""
 
 
