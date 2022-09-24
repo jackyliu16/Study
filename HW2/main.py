@@ -10,20 +10,24 @@
 @Source :
     
 """
-from matplotlib import pyplot as plt
+from math import fabs
+
 import numpy as np
-from HW1.main import show_gray_image, show_original_image, get_gray_image
+from matplotlib import pyplot as plt
+
+from HW1.main import show_original_image
 
 
-def even_change(image: np.ndarray, multiple: float) ->  np.ndarray:
+def even_change(image: np.ndarray, multiple: float) -> np.ndarray:
     """
     input a image to return a image is even dark or even light
     """
     tmp_image = image * multiple
     print(tmp_image.shape)
-    tmp_image[tmp_image < 0 ] = 0
+    tmp_image[tmp_image < 0] = 0
     tmp_image[tmp_image > 255] = 255
     return tmp_image
+
 
 # TODO using List derivation to simplify function
 def range_even_change(image: np.ndarray, left: int, right: int, func, *args) -> np.ndarray:
@@ -37,27 +41,71 @@ def range_even_change(image: np.ndarray, left: int, right: int, func, *args) -> 
                     tmp[i][j][dim] = image[i][j][dim]
     return tmp
 
+
 # implement of func
 def even(num: int, multiple: int) -> int:
     return num * multiple
 
+
 def constant(num: int, constant: int) -> int:
     return constant
+
 
 # https://blog.csdn.net/qq_40344307/article/details/93578188
 # i was boring implement the traditional ways to implement the function, thus using cv2
 import cv2
 
-def show_cdf_and_histogram(img: np.ndarray) -> None:
+def get_cdf_and_histogram(img: np.ndarray) -> np.ndarray:
     hist, bins = np.histogram(img.flatten(), 256, [0, 256])
-    # Calculate the cumulative distribution map
     cdf = hist.cumsum()
     cdf_normalized = cdf * hist.max() / cdf.max()
-    plt.plot(cdf_normalized, color='r')
+    return cdf_normalized
+
+
+def show_cdf_and_histogram(img: np.ndarray, title: str = "") -> None:
+    cdf_normal = get_cdf_and_histogram(img)
+    plt.plot(cdf_normal, color='r')
     plt.hist(img.flatten(), 256, [0, 256], color='b')
     plt.xlim([0, 256])
+    plt.title(title)
     plt.legend(('cdf', 'histogram'), loc='upper left')
     plt.show()
+
+
+def get_diff_between_two_cdf(img_a: np.ndarray, img_b: np.ndarray) -> list[int]:
+    """
+    return the different of two cdf_normalized
+    reference: https://blog.csdn.net/qq_40344307/article/details/93578188
+    """
+    """ As same as below
+    diff_cdf = [[ 0 for i in range(256)] for j in range(256)]
+    for i in range(256):
+        for j in range(256):
+            diff_cdf[i][j] = fabs(src[i] - normal[j])
+    """
+    print(f"src.shape:{img_a.shape}, normal.shape:{img_b.shape}")
+    diff_cdf = [[fabs(img_a[i] - img_b[j]) for j in range(256)] for i in range(256)]
+
+    lut = [0 for i in range(256)]
+    for i in range(256):
+        min = diff_cdf[i][0]
+        index = 0
+        for j in range(256):
+            if min > diff_cdf[i][j]:
+                min = diff_cdf[i][j]
+                index = j
+        lut[i] = ([i, index])
+    return lut
+
+
+def regularization(img_src: np.ndarray, img_normal: np.ndarray):
+    lut = get_diff_between_two_cdf(get_cdf_and_histogram(img_src), get_cdf_and_histogram(img_normal))
+    print(f"img.src.shape:{img_src.shape}, lut.type{len(lut)}, lut:{lut}")
+    for i in range(img_src.shape[0]):
+        for j in range(img_src.shape[1]):
+            img_src[i][j] = lut[img_src[i][j]][1]
+    show_cdf_and_histogram(img_src, title="histogram specification - output")
+    show_original_image(img_src, title="histogram specification - output")
 
 
 if __name__ == "__main__":
@@ -93,20 +141,19 @@ if __name__ == "__main__":
     # show original image cdf
     # show cdf right now
     img = cv2.imread("OIP-C.jpg", 0)
-    print(img.shape)
-    show_cdf_and_histogram(img)
+    show_cdf_and_histogram(img, title="histogram equalization - input")
+    show_original_image(img, title="histogram equalization - input#")
 
-    # gray = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-    show_original_image(img)
-    # cv2.imshow('img', img)
-
-    # show cdf after equalizeHist
     equ = cv2.equalizeHist(img)
-    show_cdf_and_histogram(equ)
-    show_original_image(equ)
+    show_cdf_and_histogram(equ, title="histogram equalization - output")
+    show_original_image(equ, title="histogram equalization - output")
+
+    img2 = cv2.imread("R-C.jfif", 0)
+    show_cdf_and_histogram(img2, title="histogram specification - standard")
+    show_original_image(img2, title="histogram specification - standard")
+    regularization(img, img2)
 
     # using cv2.equalizeHist to equalization
-
 
 # Recode of different ways
 """
@@ -115,5 +162,3 @@ hist_full = cv2.calcHist([img], [0], None, [256], [0, 256])
 plt.plot(hist_full)
 plt.show()
 """
-
-
