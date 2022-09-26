@@ -84,8 +84,11 @@ def get_diff_between_two_cdf(img_a: np.ndarray, img_b: np.ndarray) -> list[int]:
             diff_cdf[i][j] = fabs(src[i] - normal[j])
     """
     print(f"src.shape:{img_a.shape}, normal.shape:{img_b.shape}")
+    # collect the different between two cdf histogram
     diff_cdf = [[fabs(img_a[i] - img_b[j]) for j in range(256)] for i in range(256)]
 
+    # for gery value finding the min value and it's index
+    # TODO finish this action with color image but not gery image
     lut = [0 for i in range(256)]
     for i in range(256):
         min = diff_cdf[i][0]
