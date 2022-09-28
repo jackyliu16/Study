@@ -7,6 +7,7 @@
 @Reference  : 
     1. show to using cv2 to operate image:  https://blog.csdn.net/qq_40344307/article/details/93578188
     2. how to histogram specification :     https://blog.csdn.net/qq_38328871/article/details/85056234
+    3. how to filtering :                   https://blog.csdn.net/qq_40962368/article/details/80922275
 @Source :
     https://cn.bing.com/images/
 """
@@ -16,7 +17,7 @@ from math import fabs
 import numpy as np
 from matplotlib import pyplot as plt
 
-from HW1.main import show_original_image
+from HW1.main import show_original_image, get_gray_image
 
 
 def even_change(image: np.ndarray, multiple: float) -> np.ndarray:
@@ -145,33 +146,46 @@ def sharpen(img: np.ndarray):
     out = cv2.filter2D(img, -1, kernel=kernel)
     return out
 
+def smoothing_filtering(img: np.ndarray):
+    kernel = np.ones((5, 5), np.float32) / 25
+
+    dst = cv2.filter2D(img, -1, kernel)
+    return dst
+
+def average_filtering(img: np.ndarray):
+    # blur = cv2.blur(img, (3, 5))
+    box = cv2.boxFilter(img, -1, (3, 5))
+    return box
+
+
 if __name__ == "__main__":
-    # img_1 = plt.imread("OIP-C.jpg")
+    img_1 = plt.imread("OIP-C.jpg")
     #
-    # using gray image here for easy look
+    # # using gray image here for easy look
     # plt_gray = get_gray_image(img_1)
-    # show_original_image(plt_gray)
+    # show_original_image(plt_gray, title='plt gray')
+    # show_cdf_and_histogram(plt_gray)
     #
-    # even light
+    # # even light
     # lighted_img = even_change(plt_gray, 1.1)
-    # show_original_image(lighted_img)
+    # show_original_image(lighted_img, title='even lighted img')
     #
-    # even dark
+    # # even dark
     # darked_img = even_change(plt_gray, 0.9)
-    # show_original_image(darked_img)
+    # show_original_image(darked_img, title='even darked img')
     #
-    # Even brighter [100, 150)
-    # range_brighter = range_even_change(plt_gray, 1.1, 100, 150, even)
-    # show_original_image(range_brighter)
+    # # Even brighter [100, 150)
+    # range_brighter = range_even_change(plt_gray, 100, 150, even, 1.1)
+    # show_original_image(range_brighter, title='range brighter [100, 150)')
     #
-    # for [0, 80) and [150, 255) low grey value
+    # # for [0, 80) and [150, 255) low grey value
     # tmp_a = range_even_change(plt_gray, 0, 80, constant, 50)
     # low_grey = range_even_change(tmp_a, 150, 255, constant, 50)
-    # show_original_image(low_grey)
-    # 0 value
+    # show_original_image(low_grey, title='[0, 80) and [150, 255) low grey value')
+    # # 0 value
     # tmp_b = range_even_change(plt_gray, 0, 80, constant, 0)
     # zero_graph = range_even_change(tmp_a, 150, 255, constant, 0)
-    # show_original_image(zero_graph)
+    # show_original_image(zero_graph, title='[0, 80) and [150, 255) 0 value')
 
     # TODO haven't functional
 
@@ -190,18 +204,16 @@ if __name__ == "__main__":
     # show_original_image(img2, title="histogram specification - standard")
     # regularization(img, img2)
 
-    # using cv2.equalizeHist to equalization
-
-    ##### 4 #####
-
-    img3 = cv2.imread("R-C.jfif")
-    show_original_image(img3, title='no noise')
-    img4 = gaussian_noise(img3)
-    show_original_image(img4, title='gaussian noise')
-    img5 = sp_noise(img3, 0.05)
-    show_original_image(img5, title='sp noise')
-    img6 = sharpen(img3)
-    show_original_image(img6)
+    # img3 = cv2.imread("R-C.jfif")
+    # show_original_image(img3, title='no noise')
+    # img4 = gaussian_noise(img3, mean=0, sigma=0.001)
+    # show_original_image(img4, title='gaussian noise')
+    # img5 = sp_noise(img3, 0.05)
+    # show_original_image(img5, title='sp noise')
+    # img6 = smoothing_filtering(img4)
+    # show_original_image(img6, title='smoothing_filtering')
+    # img7 = average_filtering(img4)
+    # show_original_image(img7, title='average_filtering')
 
 
 
