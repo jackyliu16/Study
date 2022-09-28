@@ -10,6 +10,7 @@
 @Source :
     https://cn.bing.com/images/
 """
+import random
 from math import fabs
 
 import numpy as np
@@ -110,6 +111,39 @@ def regularization(img_src: np.ndarray, img_normal: np.ndarray):
     show_cdf_and_histogram(img_src, title="histogram specification - output")
     show_original_image(img_src, title="histogram specification - output")
 
+# 本来想只做灰度的，但是灰度的话show_origin_image函数没有办法正常运行
+def gaussian_noise(img: np.ndarray, mean=0, sigma=0.01):
+    img = np.array(img / 255, dtype=float)
+    noise = np.random.normal(mean, sigma ** 0.5, img.shape)
+    out = img + noise
+    out[out > 255] = 255
+    out[out < 0  ] = 0
+    out = np.uint8(out * 255)
+    return out
+
+
+def sp_noise(img: np.ndarray, prob):
+    out = np.zeros(img.shape, np.uint8)
+    thres = 1 - prob
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            rdn = random.random()
+            if rdn < prob:
+                out[i][j] = 0
+            elif rdn > thres:
+                out[i][j] = 255
+            else:
+                out[i][j] = img[i][j]
+    return out
+
+def sharpen(img: np.ndarray):
+    kernel = np.array([
+        [0, -1, 0],
+        [-1, 5, -1],
+        [0, -1, 0],
+    ])
+    out = cv2.filter2D(img, -1, kernel=kernel)
+    return out
 
 if __name__ == "__main__":
     # img_1 = plt.imread("OIP-C.jpg")
@@ -143,20 +177,34 @@ if __name__ == "__main__":
 
     # show original image cdf
     # show cdf right now
-    img = cv2.imread("OIP-C.jpg", 0)
-    show_cdf_and_histogram(img, title="histogram equalization - input")
-    show_original_image(img, title="histogram equalization - input#")
-
-    equ = cv2.equalizeHist(img)
-    show_cdf_and_histogram(equ, title="histogram equalization - output")
-    show_original_image(equ, title="histogram equalization - output")
-
-    img2 = cv2.imread("R-C.jfif", 0)
-    show_cdf_and_histogram(img2, title="histogram specification - standard")
-    show_original_image(img2, title="histogram specification - standard")
-    regularization(img, img2)
+    # img = cv2.imread("OIP-C.jpg", 0)
+    # show_cdf_and_histogram(img, title="histogram equalization - input")
+    # show_original_image(img, title="histogram equalization - input#")
+    #
+    # equ = cv2.equalizeHist(img)
+    # show_cdf_and_histogram(equ, title="histogram equalization - output")
+    # show_original_image(equ, title="histogram equalization - output")
+    #
+    # img2 = cv2.imread("R-C.jfif", 0)
+    # show_cdf_and_histogram(img2, title="histogram specification - standard")
+    # show_original_image(img2, title="histogram specification - standard")
+    # regularization(img, img2)
 
     # using cv2.equalizeHist to equalization
+
+    ##### 4 #####
+
+    img3 = cv2.imread("R-C.jfif")
+    show_original_image(img3, title='no noise')
+    img4 = gaussian_noise(img3)
+    show_original_image(img4, title='gaussian noise')
+    img5 = sp_noise(img3, 0.05)
+    show_original_image(img5, title='sp noise')
+    img6 = sharpen(img3)
+    show_original_image(img6)
+
+
+
 
 # Recode of different ways
 """
